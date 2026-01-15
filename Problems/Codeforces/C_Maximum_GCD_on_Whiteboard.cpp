@@ -24,7 +24,7 @@ void solve()
     int ans = 0;
     for (int i = 1; i <= n; i ++)
     {
-        pref[i] = pref[i - 1] + freq[i]; //Use prefix sum to find no. of numbers below threshold of 4 * i in O(n)
+        pref[i] = pref[i - 1] + freq[i]; //Use prefix sum to find no. of numbers below threshold of 4 * i in O(1)
     }
     for (int i = 1; i <= n; i ++)
     {
