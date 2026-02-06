@@ -152,36 +152,23 @@ void solve()
     int n;
     cin >> n;
     vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
     for (int i = 0; i < n; i ++)
     {
         cin >> a[i];
-        freq[a[i]] += 1;
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    multiset<int> towers;
+    towers.insert(a[0]);
+    for (int i = 1; i < n; i ++)
     {
-        for (int m = g; m <= 1e6; m += g) 
+        auto it = towers.upper_bound(a[i]);
+        if (it == towers.end()) towers.insert(a[i]);
+        else
         {
-            cnt[g] += freq[m];
+            towers.erase(it);
+            towers.insert(a[i]);
         }
     }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
-    {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
-        {
-            ans[c] = g;
-            c--;
-        }
-    }
-    for (int k = 1; k <= n; k++) 
-    {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
-    }
-    cout << endl;
+    cout << towers.size() << endl;
 }
 int32_t main() 
 {

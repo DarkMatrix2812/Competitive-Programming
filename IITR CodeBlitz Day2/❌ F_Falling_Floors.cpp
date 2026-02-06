@@ -149,39 +149,37 @@ int lcm(int a, int b)
 }
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
+    int n, m;
+    cin >> n >> m;
+    vector<int> x(n);
     for (int i = 0; i < n; i ++)
     {
-        cin >> a[i];
-        freq[a[i]] += 1;
+        cin >> x[i];
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    sort(x.begin(), x.end());
+    vector<int> pref = prefixArr(x);
+    for (int i = 0; i < m; i ++)
     {
-        for (int m = g; m <= 1e6; m += g) 
+        int s, r;
+        cin >> s >> r;
+        auto idx = lower_bound(x.begin(), x.end(), r); // >= r
+        int k = x.end() - idx;
+        if (k < s) 
         {
-            cnt[g] += freq[m];
+            cout << 0 << " ";
+            continue;
         }
-    }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
-    {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
+        if (k == 0) 
         {
-            ans[c] = g;
-            c--;
+            cout << (pref[n] % MOD) << " ";
+            continue;
         }
+        int sum1 = pref[idx - x.begin()];
+        int sum2 = pref[n] - pref[idx - x.begin()];
+        int term1 = ( (__int128)sum1 * (k - s + 1) ) % MOD * modinv(k + 1, MOD) % MOD;
+        int term2 = ( (__int128)sum2 * (k - s) ) % MOD * modinv(k, MOD) % MOD;
+        cout << (term1 + term2) % MOD << " ";
     }
-    for (int k = 1; k <= n; k++) 
-    {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
-    }
-    cout << endl;
 }
 int32_t main() 
 {

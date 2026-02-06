@@ -149,45 +149,55 @@ int lcm(int a, int b)
 }
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
+    int n; char c;
+    cin >> n >> c;
+    string s;
+    cin >> s;
+    vector<int> wrong, correct;
     for (int i = 0; i < n; i ++)
     {
-        cin >> a[i];
-        freq[a[i]] += 1;
+        if (s[i] != c) wrong.push_back(i + 1);
+        else correct.push_back(i + 1);
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    if (wrong.empty()) 
     {
-        for (int m = g; m <= 1e6; m += g) 
+        cout << 0 << endl;
+        return;
+    }
+    if (wrong.back() < n)
+    {
+        cout << 1 << endl;
+        cout << n << endl;
+        return;
+    }
+    for (int x : correct)
+    {
+        bool flag = false;
+        for (int d = 1; x * d <= n; d ++)
         {
-            cnt[g] += freq[m];
+            if (s[x * d - 1] != c)
+            {
+                flag = true;
+                break;
+            }
+        }
+        if (flag == false) // we can do in one move
+        {
+            cout << 1 << endl;
+            cout << x << endl;
+            return;
         }
     }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
-    {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
-        {
-            ans[c] = g;
-            c--;
-        }
-    }
-    for (int k = 1; k <= n; k++) 
-    {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
-    }
-    cout << endl;
+    // else we can't
+    cout << 2 << endl;
+    cout << n << " " << n - 1 << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
+    cin >> t;
     while (t--)
     {
         solve();

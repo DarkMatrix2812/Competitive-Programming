@@ -149,39 +149,37 @@ int lcm(int a, int b)
 }
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, t;
+    cin >> n >> t;
     vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
     for (int i = 0; i < n; i ++)
     {
         cin >> a[i];
-        freq[a[i]] += 1;
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    vector<int> pref = prefixArr(a);
+    int start = 0; int stop = n;
+    int ans = 0;
+    while (start <= stop)
     {
-        for (int m = g; m <= 1e6; m += g) 
+        int mid = start + (stop - start) / 2;
+        bool b = false;
+        for (int i = 0; i <= n - mid; i ++)
         {
-            cnt[g] += freq[m];
+            int time = pref[i + mid] - pref[i];
+            if (time <= t)
+            {
+                b = true;
+                break;
+            }
         }
-    }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
-    {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
+        if (b)
         {
-            ans[c] = g;
-            c--;
+            ans = mid;
+            start = mid + 1;
         }
+        else stop = mid - 1;
     }
-    for (int k = 1; k <= n; k++) 
-    {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
-    }
-    cout << endl;
+    cout << ans << endl;
 }
 int32_t main() 
 {

@@ -152,36 +152,27 @@ void solve()
     int n;
     cin >> n;
     vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
     for (int i = 0; i < n; i ++)
     {
         cin >> a[i];
-        freq[a[i]] += 1;
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    vector<int> b(n);
+    for (int i = 0; i < n; i ++)
     {
-        for (int m = g; m <= 1e6; m += g) 
-        {
-            cnt[g] += freq[m];
-        }
+        cin >> b[i];
     }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
+    vector<int> c(n);
+    for (int i = 0; i < n; i ++)
     {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
-        {
-            ans[c] = g;
-            c--;
-        }
+        c[i] = a[i] - b[i];
     }
-    for (int k = 1; k <= n; k++) 
+    sort(c.begin(), c.end());
+    int ans = 0;
+    for (int i = 0; i < n; i ++)
     {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
+        ans += c.end() - upper_bound(c.begin() + i + 1, c.end(), -c[i]);
     }
-    cout << endl;
+    cout << ans;
 }
 int32_t main() 
 {

@@ -149,45 +149,65 @@ int lcm(int a, int b)
 }
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> a(n);
-    vector<int> freq(1e6 + 1, 0);
-    for (int i = 0; i < n; i ++)
+    int k, x;
+    cin >> k >> x;
+    if (k * k <= x)
     {
-        cin >> a[i];
-        freq[a[i]] += 1;
+        cout << 2 * k - 1 << endl;
+        return;
     }
-    // cnt[g] = no. multiples of g (bucket logic)
-    vector<int> cnt(1e6 + 1, 0);
-    for (int g = 1; g <= 1e6; g++) 
+    if (k * (k + 1) / 2 == x)
     {
-        for (int m = g; m <= 1e6; m += g) 
+        cout << k << endl;
+        return;
+    }
+    if (k * (k + 1) / 2 > x)
+    {
+        int ans = 0;
+        int low = 1; int high = k;
+        while (low <= high)
         {
-            cnt[g] += freq[m];
+            int mid = low + (high - low) / 2;
+            if (mid * (mid + 1) / 2 < x)
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                ans = mid;
+                high = mid - 1;
+            }
         }
+        cout << ans << endl;
+        return;
     }
-    vector<int> ans(n + 1, 0);
-    for (int g = 1e6; g >= 1; g --) 
+    if (k * (k + 1) / 2 < x)
     {
-        int c = cnt[g];
-        while (c > 0 && ans[c] == 0) 
+        int ans = 0;
+        int low = k + 1; int high = 2 * k - 1;
+        while (low <= high)
         {
-            ans[c] = g;
-            c--;
+            int mid = low + (high - low) / 2;
+            if (k * k - ((2 * k - 1 - mid) * (2 * k - mid) / 2) < x)
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                ans = mid;
+                high = mid - 1;
+            }
         }
+        cout << ans << endl;
+        return;
     }
-    for (int k = 1; k <= n; k++) 
-    {
-        cout << (ans[k] == 0 ? 1 : ans[k]) << " ";
-    }
-    cout << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
+    cin >> t;
     while (t--)
     {
         solve();
