@@ -12,7 +12,7 @@ void solve()
     {
         cin >> c[i];
     }
-    vector<int> dp(x + 1, 0);
+    vector<int> dp(x + 1, 0); // no. of ways to get x
     dp[0] = 1;
     for (int i = 1; i <= x; i ++)
     {
