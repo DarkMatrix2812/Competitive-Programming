@@ -171,7 +171,28 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> prefmax(n);
+    prefmax[0] = a[0];
+    for (int i = 1; i < n; i++) 
+    {
+        prefmax[i] = max(prefmax[i - 1], a[i]);
+    }
+    int ans = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (a[i] >= prefmax[i]) 
+        {
+            ans += 1;
+        }
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

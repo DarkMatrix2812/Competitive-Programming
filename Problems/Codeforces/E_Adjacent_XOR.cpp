@@ -147,31 +147,47 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
+bool isPowerOf2(long long x)
+{
+    return x > 0 && (x & (x - 1)) == 0;
+}
+bool isPrime(int n)
+{
+    if (n < 2) return false;
+    for(long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> b(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> b[i];
+    }
+    if (b.back() != a.back())
+    {
+        cout << "NO" << endl;
+        return;
+    }
+    for (int i = n - 2; i >= 0; i --)
+    {
+        if (a[i] == b[i]) continue;
+        if ((a[i] ^ a[i + 1]) == b[i]) continue;
+        if ((a[i] ^ b[i + 1]) == b[i]) continue;
+        cout << "NO" << endl;
+        return;
+    }
+    cout << "YES" << endl;
 }
 int32_t main() 
 {

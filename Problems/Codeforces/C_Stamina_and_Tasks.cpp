@@ -171,7 +171,21 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> c(n);
+    vector<int> p(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> c[i] >> p[i];
+    }
+    double S = 1.0;
+    double ans = 0.0;
+    for (int i = n - 1; i >= 0; i --)
+    {
+        ans = max(ans, c[i] + (1 - p[i] / 100.0) * ans);
+    }
+    cout << fixed << setprecision(6) << ans << endl;
 }
 int32_t main() 
 {

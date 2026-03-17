@@ -171,7 +171,11 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int a, b, c, m;
+    cin >> a >> b >> c >> m;
+    cout << m / a * 6 - m / lcm(a, b) * 3 - m / lcm(c, a) * 3 + m / lcm(lcm(a, b), c) * 2 << " ";
+    cout << m / b * 6 - m / lcm(a, b) * 3 - m / lcm(c, b) * 3 + m / lcm(lcm(a, b), c) * 2 << " ";
+    cout << m / c * 6 - m / lcm(a, c) * 3 - m / lcm(c, b) * 3 + m / lcm(lcm(a, b), c) * 2 << endl;
 }
 int32_t main() 
 {

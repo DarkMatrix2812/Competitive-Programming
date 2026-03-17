@@ -147,38 +147,75 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
+bool isPowerOf2(long long x)
+{
+    return x > 0 && (x & (x - 1)) == 0;
+}
+bool isPrime(int n)
+{
+    if (n < 2) return false;
+    for(long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
 void solve()
 {
-    
+    int n, h;
+    cin >> n >> h;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    int k = 0;
+    int x = h;
+    vector<int> tmp;
+    for (int i = 0; i < n; i ++)
+    {
+        tmp.push_back(a[i]);
+        sort(tmp.rbegin(), tmp.rend());
+        bool ok = true;
+        h = x;
+        if (tmp.size() % 2 == 0)
+        {
+            for (int i = 0; i < tmp.size() - 1; i += 2)
+            {
+                int height = max(tmp[i], tmp[i + 1]);
+                h -= height;
+                if (h < 0) 
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) k = tmp.size();
+        }
+        else
+        {
+            tmp.push_back(0);
+            for (int i = 0; i < tmp.size() - 1; i += 2)
+            {
+                int height = max(tmp[i], tmp[i + 1]);
+                h -= height;
+                if (h < 0) 
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            tmp.pop_back();
+            if (ok) k = tmp.size();
+        }
+    }
+    cout << k;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

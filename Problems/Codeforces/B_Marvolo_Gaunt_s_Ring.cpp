@@ -147,38 +147,58 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
+bool isPowerOf2(long long x)
+{
+    return x > 0 && (x & (x - 1)) == 0;
+}
+bool isPrime(int n)
+{
+    if (n < 2) return false;
+    for(long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
 void solve()
 {
-    
+    int n, p, q, r;
+    cin >> n >> p >> q >> r;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> pref_min(n), pref_max(n), suff_min(n), suff_max(n);
+    pref_min[0] = a[0];
+    pref_max[0] = a[0];
+    for(int i = 1; i < n; i++) 
+    {
+        pref_min[i] = min(pref_min[i-1], a[i]);
+        pref_max[i] = max(pref_max[i-1], a[i]);
+    }
+    suff_min[n-1] = a[n-1];
+    suff_max[n-1] = a[n-1];
+    for(int i = n-2; i >= 0; i--) 
+    {
+        suff_min[i] = min(suff_min[i+1], a[i]);
+        suff_max[i] = max(suff_max[i+1], a[i]);
+    }
+    int ans = -1e100;
+    for (int j = 0; j < n; j ++)
+    {
+        if (p < 0 && r < 0) ans = max(ans, p * pref_min[j] + q * a[j] + r * suff_min[j]);
+        else if (p < 0 && r >= 0) ans = max(ans, p * pref_min[j] + q * a[j] + r * suff_max[j]);
+        else if (p >= 0 && r < 0) ans = max(ans, p * pref_max[j] + q * a[j] + r * suff_min[j]);
+        else ans = max(ans, p * pref_max[j] + q * a[j] + r * suff_max[j]);
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

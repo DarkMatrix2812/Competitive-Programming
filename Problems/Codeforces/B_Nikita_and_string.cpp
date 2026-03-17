@@ -147,38 +147,52 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
+bool isPowerOf2(long long x)
+{
+    return x > 0 && (x & (x - 1)) == 0;
+}
+bool isPrime(int n)
+{
+    if (n < 2) return false;
+    for(long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
 void solve()
 {
-    
+    string s;
+    cin >> s;
+    int n = s.length();
+    // ans is of the form a...ab...ba...a
+    vector<int> prefa(n), prefb(n);
+    prefa[0] = (s[0] == 'a' ? 1 : 0);
+    prefb[0] = (s[0] == 'b' ? 1 : 0);
+    int ans = 0;
+    for (int i = 1; i < n; i ++)
+    {
+        prefa[i] = prefa[i - 1] + (s[i] == 'a');
+        prefb[i] = prefb[i - 1] + (s[i] == 'b');
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = i; j < n; j ++)
+        {
+            int left = (i == 0 ? 0 : prefa[i - 1]);
+            int mid = prefb[j] - (i == 0 ? 0 : prefb[i - 1]);
+            int right = prefa[n - 1] - prefa[j];
+            ans = max(ans, left + mid + right);
+        }
+    }
+    if (count(s.begin(), s.end(), 'b') == 0) cout << n;
+    else cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

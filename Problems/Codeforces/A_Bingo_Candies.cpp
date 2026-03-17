@@ -171,7 +171,22 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<vector<int>> a(n, vector<int>(n, 0));
+    unordered_map<int, int> freq;
+    bool ok = true;
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < n; j ++)
+        {
+            cin >> a[i][j];
+            freq[a[i][j]] += 1;
+            if (freq[a[i][j]] > n * (n - 1)) ok = false;
+        }
+    }
+    if (ok) cout << "YES" << endl;
+    else cout << "NO" << endl;
 }
 int32_t main() 
 {

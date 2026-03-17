@@ -147,38 +147,68 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
+bool isPowerOf2(long long x)
+{
+    return x > 0 && (x & (x - 1)) == 0;
+}
+bool isPrime(int n)
+{
+    if (n < 2) return false;
+    for(long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
 void solve()
 {
-    
+    int n, q, m;
+    cin >> n >> q >> m;
+    vector<int> a(n + 1);
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<vector<int>> queries;
+    for (int i = 0; i < q; i ++)
+    {
+        int x, l, r;
+        cin >> x >> l >> r;
+        queries.push_back({x, l, r});
+    }
+    vector<int> b(m);
+    for (int i = 0; i < m; i ++)
+    {
+        cin >> b[i];
+    }
+    for (int i = q - 1; i >= 0; i --)
+    {
+        if (queries[i][0] == 1)
+        {
+            for (int j = 0; j < m; j ++)
+            {
+                if (b[j] == queries[i][1]) b[j] = queries[i][2];
+                else if (b[j] > queries[i][1] && b[j] <= queries[i][2]) b[j] -= 1;
+            }
+        }
+        else
+        {
+            for (int j = 0; j < m; j ++)
+            {
+                if (b[j] >= queries[i][1] && b[j] <= queries[i][2]) b[j] = queries[i][1] + queries[i][2] - b[j];
+            }
+        }
+    }
+    for (int i = 0; i < m; i ++)
+    {
+        cout << a[b[i]] << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

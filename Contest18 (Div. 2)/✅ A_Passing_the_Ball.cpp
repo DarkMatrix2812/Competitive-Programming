@@ -171,7 +171,25 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    vector<int> recieved(n + 1, 0);
+    recieved[1] = 1;
+    int curr = 1;
+    for(int i = 0; i < n; i++)
+    {
+        if(s[curr - 1] == 'R') curr += 1;
+        else curr -= 1;
+        recieved[curr] = 1;
+    }
+    int ans = 0;
+    for (int x : recieved)
+    {
+        if (x == 1) ans += 1;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

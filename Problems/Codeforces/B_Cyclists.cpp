@@ -171,7 +171,54 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k, p, m;
+    cin >> n >> k >> p >> m;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    int ans = 0;
+    while (true)
+    {
+        if (p <= k)
+        {
+            m -= a[p - 1];
+            if (m < 0) break;
+            else 
+            {
+                ans += 1;
+                int x = a[p - 1];
+                a.erase(a.begin() + p - 1);  
+                a.push_back(x);
+                p = n;
+            }
+        }
+        else
+        {
+            int mn = INT_MAX;
+            for (int i = 0; i < k; i ++)
+            {
+                mn = min(a[i], mn);
+            }
+            int idx = -1;
+            for (int i = 0; i < k; i ++)
+            {
+                if (a[i] == mn)
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            int x = a[idx];
+            m -= x;
+            a.erase(a.begin() + idx);  
+            a.push_back(x);
+            p -= 1;
+        }
+        if (m < 0) break;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
