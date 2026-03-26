@@ -179,7 +179,49 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    map<int, int> freq;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        freq[a[i]] += 1;
+    }
+    int l = 0; int r = 0;
+    for (auto &p : freq)
+    {
+        if (p.second >= k) 
+        {
+            l = p.first;
+            break;
+        }
+    }
+    if (l == 0)
+    {
+        cout << -1 << endl;
+        return;
+    }
+    else
+    {
+        r = l;
+    }
+    auto ans = make_pair(l, r);
+    for (auto &p : freq)
+    {
+        if (p.second < k) continue;
+        if (p.first == r + 1)
+        {
+            r = p.first;
+        }
+        else
+        {
+            l = p.first;
+            r = l;
+        }
+        if (r - l > (ans.second - ans.first)) ans = {l, r};
+    }
+    cout << ans.first << " " << ans.second << endl;
 }
 int32_t main() 
 {

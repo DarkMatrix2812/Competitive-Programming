@@ -179,7 +179,23 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k;
+    cin >> n >> k;
+    int ans = k;
+    vector<tuple<int, int, int>> v;
+    for (int i = 0; i < n; i ++)
+    {
+        int l, r, real;
+        cin >> l >> r >> real;
+        v.push_back({l, r, real});
+    } 
+    sort(v.begin(), v.end());
+    for (auto &p : v)
+    {
+        if (get<0>(p) <= ans) ans = max(ans, get<2>(p));
+        else break;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

@@ -1,11 +1,3 @@
-/*
- * ██████╗  █████╗ ██████╗ ██╗  ██╗███╗   ███╗ █████╗ ████████╗██████╗ ██╗██╗  ██╗
- * ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔══██╗██║╚██╗██╔╝
- * ██║  ██║███████║██████╔╝█████╔╝ ██╔████╔██║███████║   ██║   ██████╔╝██║ ╚███╔╝ 
- * ██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║╚██╔╝██║██╔══██║   ██║   ██╔══██╗██║ ██╔██╗ 
- * ██████╔╝██║  ██║██║  ██║██║  ██╗██║ ╚═╝ ██║██║  ██║   ██║   ██║  ██║██║██╔╝ ██╗
- * ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
- */
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
@@ -137,13 +129,13 @@ vector<int> prefixArr(vector<int>& arr)
     }
     return pref;
 }
-vector<int> suffixArr(const vector<int>& arr) 
+vector<int> suffixArr(vector<int>& arr) 
 {
     int n = arr.size();
     vector<int> suff(n + 1, 0);
-    for (int i = 1; i <= n; i ++) 
+    for (int i = n - 1; i >= 0; i--) 
     {
-        suff[i] = suff[i - 1] + arr[n - i];
+        suff[i] = suff[i + 1] + arr[i];
     }
     return suff;
 }
@@ -179,7 +171,41 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int r, g, b;
+    cin >> r >> g >> b;
+    vector<pair<int, char>> pq;
+    pq.push_back({r, 'R'});
+    pq.push_back({g, 'G'});
+    pq.push_back({b, 'B'});
+    string ans = "";
+    for (int i = 0; i < r + g + b; i ++)
+    {
+        sort(pq.rbegin(), pq.rend());
+        int best = 0;
+        int best_idx = -1;
+        for (int j = 0; j < 3; j++)
+        {
+            int cnt = pq[j].first;
+            char c = pq[j].second;
+            if (cnt == 0) continue;
+            int n = ans.size();
+            if (n >= 1 && ans[n - 1] == c) continue;
+            if (n >= 3 && ans[n - 3] == c) continue;
+            if (cnt > best)
+            {
+                best = cnt;
+                best_idx = j;
+            }
+            else if (cnt == best) // s[i] == s[i - 1] && s[i] == s[i - 3]
+            {
+                if (n >= 2 && ans[n - 2] == c) best_idx = j; // s[i] != s[i - 2] though so we can extend
+            }
+        }
+        if (best_idx == -1) break;
+        ans.push_back(pq[best_idx].second);
+        pq[best_idx].first -= 1;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

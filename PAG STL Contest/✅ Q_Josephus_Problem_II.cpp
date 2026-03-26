@@ -155,6 +155,39 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
+
+struct Fenwick 
+{
+    int n;
+    vector<int> bit;
+    Fenwick(int n) : n(n), bit(n + 1, 0) {}
+    void update(int i, int val) 
+    {
+        for (; i <= n; i += i & -i)
+            bit[i] += val;
+    }
+    int query(int i) 
+    {
+        int s = 0;
+        for (; i > 0; i -= i & -i)
+            s += bit[i];
+        return s;
+    }
+    // smallest index such that pref sum >= k
+    int find_kth(int k) {
+        int pos = 0;
+        for (int i = 20; i >= 0; i--) 
+        {
+            int next = pos + (1 << i);
+            if (next <= n && bit[next] < k) 
+            {
+                k -= bit[next];
+                pos = next;
+            }
+        }
+        return pos + 1;
+    }
+};
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -179,14 +212,27 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k;
+    cin >> n >> k;
+    Fenwick ft(n);
+    for (int i = 1; i <= n; i++) ft.update(i, 1);
+    int cur = 0;       
+    int remaining = n;
+    while (remaining) 
+    {
+        cur = (cur + k) % remaining;  
+        int idx = ft.find_kth(cur + 1); 
+        cout << idx << " ";
+        ft.update(idx, -1);
+        remaining -= 1;
+    }
+    cout << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

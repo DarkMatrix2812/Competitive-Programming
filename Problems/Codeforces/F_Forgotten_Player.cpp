@@ -1,11 +1,3 @@
-/*
- * ██████╗  █████╗ ██████╗ ██╗  ██╗███╗   ███╗ █████╗ ████████╗██████╗ ██╗██╗  ██╗
- * ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔══██╗██║╚██╗██╔╝
- * ██║  ██║███████║██████╔╝█████╔╝ ██╔████╔██║███████║   ██║   ██████╔╝██║ ╚███╔╝ 
- * ██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║╚██╔╝██║██╔══██║   ██║   ██╔══██╗██║ ██╔██╗ 
- * ██████╔╝██║  ██║██║  ██║██║  ██╗██║ ╚═╝ ██║██║  ██║   ██║   ██║  ██║██║██╔╝ ██╗
- * ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
- */
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
@@ -177,9 +169,37 @@ int lcm(int a, int b)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+vector<int> D(1e6 + 1);
+// int D(int n, int M) // O(n)
+// {
+//     int ans = 0;
+//     for (int i = 2; i <= n; i ++)
+//     {
+//         if (i % 2 == 0) ans += ((invfact[i] % M) + M) % M;
+//         else ans -= ((invfact[i] % M) + M) % M;
+//     }
+//     return ((fact[n] * ans) % M + M) % M;
+// }
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    if (n == 2)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    if (n == 3)
+    {
+        cout << 6 << endl;
+        return;
+    }
+    int a = (n - 1) * D[n - 1] % MOD2;
+    int comb = (n - 1) * (n - 2) / 2 % MOD2;
+    int b = (D[n - 1] - D[n - 3] + MOD2) % MOD2;
+    b = b * comb % MOD2;
+    int ans = n % MOD2 * ((a + b) % MOD2) % MOD2;
+    cout << ans << endl;
 }
 int32_t main() 
 {
@@ -187,6 +207,13 @@ int32_t main()
     cin.tie(nullptr);
     int t = 1;
     cin >> t;
+    build_fact(1e6, MOD2);
+    D[2] = 1;
+    for (int i = 3; i <= 1e6; i ++)
+    {
+        if (i % 2 == 1) D[i] = (((D[i - 1] * i % MOD2 - 1) % MOD2) + MOD2) % MOD2;
+        else D[i] = (((D[i - 1] * i % MOD2 + 1) % MOD2) + MOD2) % MOD2;
+    }
     while (t--)
     {
         solve();

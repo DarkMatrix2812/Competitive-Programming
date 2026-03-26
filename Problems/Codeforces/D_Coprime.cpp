@@ -1,11 +1,3 @@
-/*
- * ██████╗  █████╗ ██████╗ ██╗  ██╗███╗   ███╗ █████╗ ████████╗██████╗ ██╗██╗  ██╗
- * ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔══██╗██║╚██╗██╔╝
- * ██║  ██║███████║██████╔╝█████╔╝ ██╔████╔██║███████║   ██║   ██████╔╝██║ ╚███╔╝ 
- * ██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║╚██╔╝██║██╔══██║   ██║   ██╔══██╗██║ ██╔██╗ 
- * ██████╔╝██║  ██║██║  ██║██║  ██╗██║ ╚═╝ ██║██║  ██║   ██║   ██║  ██║██║██╔╝ ██╗
- * ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
- */
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
@@ -179,7 +171,51 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<vector<int>> grid(n, vector<int>(n, 0));
+    int curr = 1;
+    grid[0][0] = 1;
+    for (int i = 0; i < n;)
+    {
+        for (int j = 0; j < n;)
+        {
+            if (curr % 2 == 1)
+            {
+                i += 1;
+                if (i >= n) break;
+                curr += 1;
+                grid[i][j] = curr;
+            }
+            else
+            {
+                j += 1;
+                if (j >= n) break;
+                curr += 1;
+                grid[i][j] = curr;
+            }
+        }
+    }
+    curr += 1;
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (grid[i][j] == 0)
+            {
+                grid[i][j] = curr;
+                curr += 1;
+            }
+        }
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << grid[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {

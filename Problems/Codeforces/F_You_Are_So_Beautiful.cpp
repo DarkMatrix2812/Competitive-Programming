@@ -1,11 +1,3 @@
-/*
- * ██████╗  █████╗ ██████╗ ██╗  ██╗███╗   ███╗ █████╗ ████████╗██████╗ ██╗██╗  ██╗
- * ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔══██╗██║╚██╗██╔╝
- * ██║  ██║███████║██████╔╝█████╔╝ ██╔████╔██║███████║   ██║   ██████╔╝██║ ╚███╔╝ 
- * ██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║╚██╔╝██║██╔══██║   ██║   ██╔══██╗██║ ██╔██╗ 
- * ██████╔╝██║  ██║██║  ██║██║  ██╗██║ ╚═╝ ██║██║  ██║   ██║   ██║  ██║██║██╔╝ ██╗
- * ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
- */
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
@@ -137,13 +129,13 @@ vector<int> prefixArr(vector<int>& arr)
     }
     return pref;
 }
-vector<int> suffixArr(const vector<int>& arr) 
+vector<int> suffixArr(vector<int>& arr) 
 {
     int n = arr.size();
     vector<int> suff(n + 1, 0);
-    for (int i = 1; i <= n; i ++) 
+    for (int i = n - 1; i >= 0; i--) 
     {
-        suff[i] = suff[i - 1] + arr[n - i];
+        suff[i] = suff[i + 1] + arr[i];
     }
     return suff;
 }
@@ -179,7 +171,42 @@ int lcm(int a, int b)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> l(n);
+    vector<int> r(n);
+    map<int, bool> seen;
+    for (int i = 0; i < n; i ++)
+    {
+        if (!seen[a[i]]) 
+        {
+            l[i] = 1;
+            seen[a[i]] = true;
+        }
+        else l[i] = 0;
+    }
+    seen.clear();
+    for (int i = n - 1; i >= 0; i --)
+    {
+        if (!seen[a[i]]) 
+        {
+            r[i] = 1;
+            seen[a[i]] = true;
+        }
+        else r[i] = 0;
+    }
+    vector<int> suff = suffixArr(r);
+    int ans = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        if (l[i]) ans += (suff[i]);
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
