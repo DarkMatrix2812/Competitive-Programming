@@ -155,27 +155,6 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-struct Fenwick {
-    int n;
-    vector<long long> bit;
-
-    Fenwick(int n) {
-        this->n = n;
-        bit.assign(n + 1, 0);
-    }
-
-    void update(int i, long long val) {
-        for (; i <= n; i += i & -i)
-            bit[i] += val;
-    }
-
-    long long query(int i) {
-        long long sum = 0;
-        for (; i > 0; i -= i & -i)
-            sum += bit[i];
-        return sum;
-    }
-};
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -200,7 +179,15 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int x, y;
+    cin >> x >> y;
+    int k = y / x;
+    if (k != 2)
+    {
+        cout << "YES" << endl;
+        return;
+    }
+    cout << "NO" << endl;
 }
 int32_t main() 
 {
