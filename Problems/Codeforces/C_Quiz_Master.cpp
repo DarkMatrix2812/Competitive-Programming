@@ -198,6 +198,7 @@ struct Fenwick {
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+vector<vector<int>> divisors(1e5 + 1);
 void solve()
 {
     int n, m;
@@ -212,35 +213,33 @@ void solve()
         cout << 0 << endl;
         return;
     }
-    multiset<int> all;
-    for (int i = 2; i <= m; i ++)
+    sort(a.begin(), a.end());
+    // two pointer [l, r] and check if all divisors covered in O(1)
+    vector<int> freq(m + 1, 0);
+    int l = 0;
+    int ans = INT_MAX;
+    int seen = 0;
+    for (int r = 0; r < n; r ++)
     {
-        all.insert(i);
-    }
-    sort(a.rbegin(), a.rend());
-    vector<int> ans;
-    for (int x : a)
-    {
-        vector<int> div = factors(x);
-        bool flag = false;
-        for (int d : div)
+        for (int d : divisors[a[r]])
         {
-            if (all.find(d) != all.end())
-            {
-                all.erase(d);
-                flag = true;
-            }
+            if (d > m) continue;
+            if (freq[d] == 0) seen += 1;
+            freq[d] += 1;
         }
-        if (flag) ans.push_back(x);
-        if (all.empty()) break;
+        while (seen == m - 1)
+        {
+            ans = min(ans, a[r] - a[l]);
+            for (int d : divisors[a[l]])
+            {
+                if (d > m) continue;
+                freq[d] -= 1;
+                if (freq[d] == 0) seen -= 1;
+            }
+            l += 1;
+        }
     }
-    if (!all.empty() || ans.empty()) 
-    {
-        cout << -1 << endl;
-        return;
-    }
-    sort(ans.begin(), ans.end());
-    cout << ans.back() - ans[0] << endl;
+    cout << (ans == INT_MAX ? -1 : ans) << endl;
 }
 int32_t main() 
 {
@@ -248,6 +247,17 @@ int32_t main()
     cin.tie(nullptr);
     int t = 1;
     cin >> t;
+    for (int i = 1; i <= 1e5; i ++)
+    {
+        for (int d = 1; d * d <= i; d ++) 
+        {
+            if (i % d == 0) 
+            {
+                if (d >= 2) divisors[i].push_back(d);
+                if (i / d != d && i / d >= 2) divisors[i].push_back(i / d);
+            }
+        }
+    }
     while (t--)
     {
         solve();
