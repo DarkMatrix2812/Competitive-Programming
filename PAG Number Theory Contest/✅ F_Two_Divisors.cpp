@@ -236,14 +236,48 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    vector<int> ans1(n), ans2(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        int p = spf[a[i]];
+        int d1 = 1;
+        int tmp = a[i];
+        while (tmp % p == 0)
+        {
+            d1 *= p;
+            tmp /= p;
+        }
+        if (a[i] / d1 == 1)
+        {
+            ans1[i] = -1;
+            ans2[i] = -1;
+        }
+        else
+        {
+            ans1[i] = d1;
+            ans2[i] = a[i] / d1;
+        }
+    }
+    for (int x : ans1)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+    for (int x : ans2)
+    {
+        cout << x << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
+    buildSPF(1e7 + 1);
     while (t--)
     {
         solve();

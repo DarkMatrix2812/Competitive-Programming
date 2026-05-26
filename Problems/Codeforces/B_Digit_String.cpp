@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,7 +200,29 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    string s;
+    cin >> s;
+    int ans = count(s.begin(), s.end(), '4');
+    s.erase(remove(s.begin(), s.end(), '4'), s.end());
+    int n = s.length();
+    vector<int> pref13(n + 1, 0);
+    vector<int> suff2(n + 1, 0);
+    for (int i = 0; i < n; i++)
+    {
+        pref13[i + 1] = pref13[i];
+        if (s[i] == '1' || s[i] == '3') pref13[i + 1]++;
+    }
+    for (int i = n - 1; i >= 0; i--)
+    {
+        suff2[i] = suff2[i + 1];
+        if (s[i] == '2') suff2[i]++;
+    }
+    int best = LLONG_MAX;
+    for (int i = 0; i <= n; i++)
+    {
+        best = min(best, pref13[i] + suff2[i]);
+    }
+    cout << ans + best << endl;
 }
 int32_t main() 
 {

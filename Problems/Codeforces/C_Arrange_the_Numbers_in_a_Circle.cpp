@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,7 +200,48 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> c(n);
+    int single = 0; int multiple = 0;
+    int S = 0; int tmp = 0;
+    int slots = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> c[i];
+        if (c[i] == 1) single += 1;
+        else 
+        {
+            multiple += 1;
+            tmp += c[i];
+        }
+        slots += max(0LL, (c[i] / 2 - 1));
+        S += c[i];
+    }
+    if (S < 3)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    if (single == 0)
+    {
+        cout << S << endl; // we can use all
+        return;
+    }
+    if (multiple == 0)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    if (multiple == 1)
+    {
+        sort(c.begin(), c.end());
+        cout << c.back() + min(single, c.back() / 2) << endl;
+    }
+    else
+    {
+        cout << tmp + min(slots, single) << endl;
+    }
 }
 int32_t main() 
 {

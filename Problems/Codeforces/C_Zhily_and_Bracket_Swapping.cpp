@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,7 +200,48 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    string a, b;
+    cin >> a >> b;
+    int s1 = 0; int s2 = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        if (a[i] == b[i])
+        {
+            if (a[i] == '(') 
+            {
+                s1 += 1;
+                s2 += 1;
+            }
+            else
+            {
+                s1 -= 1;
+                s2 -= 1;
+            }
+        }
+        else
+        {
+            int mn = min(s1, s2);
+            if (mn == s1)
+            {
+                s1 += 1;
+                s2 -= 1;
+            }
+            else
+            {
+                s2 += 1;
+                s1 -= 1;
+            }
+        }
+        if (s1 < 0 || s2 < 0)
+        {
+            cout << "NO" << endl;
+            return;
+        }
+    }
+    if (s1 == 0 && s2 == 0) cout << "YES" << endl;
+    else cout << "NO" << endl;
 }
 int32_t main() 
 {

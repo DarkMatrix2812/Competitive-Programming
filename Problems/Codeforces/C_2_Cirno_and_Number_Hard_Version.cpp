@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -234,9 +198,107 @@ struct Fenwick {
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+bool g(int pos, bool bigger, string &cur, string &ans, string &A, vector<int> &d)
+{
+    if (pos == A.size())
+    {
+        ans = cur;
+        return true;
+    }
+    if (bigger)
+    {
+        cur.push_back(char(d[0] + '0'));
+        bool ok = g(pos + 1, true, cur, ans, A, d);
+        cur.pop_back();
+        return ok;
+    }
+    for (int x : d)
+    {
+        if (x < A[pos] - '0') continue;
+        cur.push_back(char(x + '0'));
+        if (g(pos + 1, x > A[pos] - '0', cur, ans, A, d)) return true;
+        cur.pop_back();
+    }
+    return false;
+}
+bool l(int pos, bool smaller, string &cur, string &ans, string &A, vector<int> &d)
+{
+    if (pos == A.size())
+    {
+        ans = cur;
+        return true;
+    }
+    if (smaller)
+    {
+        cur.push_back(char(d.back() + '0'));
+        bool ok = l(pos + 1, true, cur, ans, A, d);
+        cur.pop_back();
+        return ok;
+    }
+    for (int i = d.size() - 1; i >= 0; i --)
+    {
+        int x = d[i];
+        if (x > A[pos] - '0') continue;
+        cur.push_back(char(x + '0'));
+        if (l(pos + 1, x < A[pos] - '0', cur, ans, A, d)) return true;
+        cur.pop_back();
+    }
+    return false;
+}
 void solve()
 {
-    
+    int a, n;
+    cin >> a >> n;
+    vector<int> d(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> d[i];
+    }
+    sort(d.begin(), d.end());
+    string A = to_string(a);
+    string upper, lower, cur;
+    if (!g(0, false, cur, upper, A, d))
+    {
+        upper.clear();
+        int first = d[0];
+        if (first == 0)
+        {
+            if (n == 1) upper = string(A.size() + 1, '0');
+            else
+            {
+                upper.push_back(char(d[1] + '0'));
+                for (int i = 0; i < (int)A.size(); i++)
+                {
+                    upper.push_back(char(d[0] + '0'));
+                }
+            }
+        }
+        else
+        {
+            upper.push_back(char(first + '0'));
+            for (int i = 0; i < (int)A.size(); i++)
+            {
+                upper.push_back(char(d[0] + '0'));
+            }
+        }
+    }
+    cur.clear();
+    if (!l(0, false, cur, lower, A, d))
+    {
+        lower.clear();
+        int len = A.size() - 1;
+        if (len > 0)
+        {
+            for (int i = 0; i < len; i++)
+            {
+                lower.push_back(char(d.back() + '0'));
+            }
+        }
+    }
+    int ans = LLONG_MAX;
+    if (!upper.empty()) ans = min(ans, llabs(stoll(upper) - a));
+    if (!lower.empty()) ans = min(ans, llabs(a - stoll(lower)));
+    cout << ans << endl;
 }
 int32_t main() 
 {

@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,7 +200,45 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    map<int, int> f;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        f[a[i]] += 1;
+    }
+    vector<int> ans;
+    ans.push_back(*max_element(a.begin(), a.end()));
+    f[*max_element(a.begin(), a.end())] -= 1;
+    for (auto &p : f)
+    {
+        if (p.second > 0)
+        {
+            ans.push_back(p.first);
+            p.second -= 1;
+        }
+    }
+    for (auto &p : f)
+    {
+        while (p.second > 0) 
+        {
+            ans.push_back(p.first);
+            p.second -= 1;
+        }
+    }
+    int s = *max_element(a.begin(), a.end()) * n + (ans[0] == 0 ? 1 : 0);
+    unordered_set<int> seen;
+    seen.insert(ans[0]);
+    int mex = 0;
+    for (int i = 1; i < n; i ++)
+    {
+        seen.insert(ans[i]);
+        while (seen.count(mex)) mex += 1;
+        s += mex;
+    }
+    cout << s << endl;
 }
 int32_t main() 
 {

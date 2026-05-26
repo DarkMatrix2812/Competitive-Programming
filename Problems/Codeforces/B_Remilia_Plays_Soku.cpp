@@ -127,42 +127,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,7 +200,15 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, x1, x2, k;
+    cin >> n >> x1 >> x2 >> k;
+    if (n == 2 || n == 3)
+    {
+        cout << 1 << endl;
+        return;
+    }
+    int diff = min(abs(x1 - x2), n - abs(x1 - x2));
+    cout << k + diff << endl;
 }
 int32_t main() 
 {

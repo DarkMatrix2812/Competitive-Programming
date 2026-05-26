@@ -14,41 +14,16 @@ using namespace std;
 #define MOD 1000000007
 #define MOD2 998244353
 vector<int> fact, invfact;
-int binExp(int base, int exp, int M) 
+int binExp(int base, int exp) 
 {
     int result = 1;
     while (exp > 0) 
     {
-        if (exp % 2 == 1) result = (result * base) % M;
-        base = (base * base) % M;
+        if (exp % 2 == 1) result = (result * base);
+        base = (base * base);
         exp /= 2;
     }
     return result;
-}
-void build_fact(int N, int M) 
-{
-    fact = vector<int>(N + 1, 0);
-    invfact = vector<int>(N + 1, 0);
-    fact[0] = 1;
-    for (int i = 1; i <= N; i++)
-    {
-        fact[i] = fact[i - 1] * i % M;
-    }
-    invfact[N] = binExp(fact[N], M - 2, M);
-    for (int i = N - 1; i >= 0; i--)
-    {
-        invfact[i] = invfact[i + 1] * (i + 1) % M;
-    }
-}
-int nCr(int n, int r, int M) 
-{
-    if (r < 0 || r > n) return 0;
-    return fact[n] * invfact[r] % M * invfact[n - r] % M;
-}
-int nPr(int n, int r, int M) 
-{
-    if (r < 0 || r > n) return 0;
-    return fact[n] * invfact[n - r] % M;
 }
 int modinv(int a, int M) 
 {
@@ -127,42 +102,6 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
@@ -236,14 +175,40 @@ struct Fenwick {
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    map<int, int, greater<int>> freq;
+    for (int i = 0; i < n * n; i ++)
+    {
+        int x;
+        cin >> x;
+        freq[x] += 1;
+    }
+    vector<int> ans;
+    for (auto &p : freq)
+    {
+        while (p.second > 0)
+        {
+            ans.push_back(p.first);
+            p.second -= 1;
+            for (int i = 0; i < ans.size() - 1; i ++)
+            {
+                int g = gcd(p.first, ans[i]);
+                freq[g] -= 2;
+            }
+        }
+    }
+    for (int x : ans)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
