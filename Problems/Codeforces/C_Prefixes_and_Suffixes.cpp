@@ -1,0 +1,333 @@
+/*
+ * ██████╗  █████╗ ██████╗ ██╗  ██╗███╗   ███╗ █████╗ ████████╗██████╗ ██╗██╗  ██╗
+ * ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔══██╗██║╚██╗██╔╝
+ * ██║  ██║███████║██████╔╝█████╔╝ ██╔████╔██║███████║   ██║   ██████╔╝██║ ╚███╔╝ 
+ * ██║  ██║██╔══██║██╔══██╗██╔═██╗ ██║╚██╔╝██║██╔══██║   ██║   ██╔══██╗██║ ██╔██╗ 
+ * ██████╔╝██║  ██║██║  ██║██║  ██╗██║ ╚═╝ ██║██║  ██║   ██║   ██║  ██║██║██╔╝ ██╗
+ * ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
+ */
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+#define MOD 1000000007
+#define MOD2 998244353
+vector<int> fact, invfact;
+int binExp(int base, int exp, int M) 
+{
+    int result = 1;
+    while (exp > 0) 
+    {
+        if (exp % 2 == 1) result = (result * base) % M;
+        base = (base * base) % M;
+        exp /= 2;
+    }
+    return result;
+}
+void build_fact(int N, int M) 
+{
+    fact = vector<int>(N + 1, 0);
+    invfact = vector<int>(N + 1, 0);
+    fact[0] = 1;
+    for (int i = 1; i <= N; i++)
+    {
+        fact[i] = fact[i - 1] * i % M;
+    }
+    invfact[N] = binExp(fact[N], M - 2, M);
+    for (int i = N - 1; i >= 0; i--)
+    {
+        invfact[i] = invfact[i + 1] * (i + 1) % M;
+    }
+}
+int nCr(int n, int r, int M) 
+{
+    if (r < 0 || r > n) return 0;
+    return fact[n] * invfact[r] % M * invfact[n - r] % M;
+}
+int nPr(int n, int r, int M) 
+{
+    if (r < 0 || r > n) return 0;
+    return fact[n] * invfact[n - r] % M;
+}
+int modinv(int a, int M) 
+{
+    int b = M, u = 1, v = 0;
+    while (b) 
+    {
+        int t = a / b;
+        a -= t * b; swap(a, b);
+        u -= t * v; swap(u, v);
+    }
+    if (a != 1) return -1;
+    u %= M;
+    if (u < 0) u += M;
+    return u;
+}
+vector<bool> sieve(int n) 
+{
+    vector<bool> prime(n + 1, true);
+    prime[0] = prime[1] = false;
+    for (int p = 2; p * p <= n; ++p) 
+    {
+        if (prime[p] == true) 
+        {
+            for (int i = p * p; i <= n; i += p)
+                prime[i] = false;
+        }
+    }
+    return prime;
+}
+int getRoot(int x, int y) //y-th root of x
+{
+    int l = 0, h = x, ans = 0;
+    while (l <= h) 
+    {
+        int m = l + (h - l) / 2;
+        __int128 cur = 1;
+        bool ok = true;
+        for (int i = 0; i < y; i ++) 
+        {
+            cur *= m;
+            if (cur > x) 
+            {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) 
+        {
+            ans = m;
+            l = m + 1;
+        } 
+        else 
+        {
+            h = m - 1;
+        }
+    }
+    return ans;
+}
+bool isPerfectSquare(int n) 
+{
+    if (n < 0) return false;
+    int r = getRoot(n, 2);
+    return r * r == n;
+}
+vector<int> factors(int n) 
+{
+    vector<int> f;
+    for (int i = 1; i * i <= n; i++) 
+    {
+        if (n % i == 0) 
+        {
+            f.push_back(i);
+            if (i != n / i)
+                f.push_back(n / i);
+        }
+    }
+    return f; 
+}
+vector<int> spf;
+void buildSPF(int N)
+{
+    spf.resize(N + 1);
+    for (int i = 0; i <= N; i++)
+    {
+        spf[i] = i;
+    }
+    for (int i = 2; i * i <= N; i++)
+    {
+        if (spf[i] == i)
+        {
+            for (int j = i * i; j <= N; j += i)
+            {
+                if (spf[j] == j)
+                {
+                    spf[j] = i;
+                }
+            }
+        }
+    }
+}
+vector<int> primeFactors(int n)
+{
+    vector<int> pf;
+    while (n > 1)
+    {
+        int p = spf[n];
+        pf.push_back(p);
+        while (n % p == 0)
+        {
+            n /= p;
+        }
+    }
+    return pf;
+}
+vector<int> prefixArr(vector<int>& arr) 
+{
+    int n = arr.size();
+    vector<int> pref(n + 1, 0);
+    for (int i = 1; i <= n; i ++) 
+    {
+        pref[i] = pref[i - 1] + arr[i - 1];
+    }
+    return pref;
+}
+vector<int> suffixArr(const vector<int>& arr) 
+{
+    int n = arr.size();
+    vector<int> suff(n + 1, 0);
+    for (int i = 1; i <= n; i ++) 
+    {
+        suff[i] = suff[i - 1] + arr[n - i];
+    }
+    return suff;
+}
+int gcd(int a, int b)
+{
+    return (!b ? a : gcd(b, a % b));
+}
+int lcm(int a, int b)
+{
+    return a / gcd(a, b) * b;
+}
+struct Fenwick {
+    int n;
+    vector<long long> bit;
+
+    Fenwick(int n) {
+        this->n = n;
+        bit.assign(n + 1, 0);
+    }
+
+    void update(int i, long long val) {
+        for (; i <= n; i += i & -i)
+            bit[i] += val;
+    }
+
+    long long query(int i) {
+        long long sum = 0;
+        for (; i > 0; i -= i & -i)
+            sum += bit[i];
+        return sum;
+    }
+};
+// number of 1-bits in x
+// __builtin_popcountll(x);
+// // 1 if popcount is odd, 0 if even
+// __builtin_parityll(x);
+// // count leading zeros in 64-bit
+// __builtin_clzll(x);   // x != 0
+// // count trailing zeros (use: lowest set bit, bit iteration)
+// __builtin_ctzll(x);   // x != 0
+// // index of highest 1-bit (use: power of 2 ≤ x)
+// int msb = 63 - __builtin_clzll(x);
+// // index of lowest 1-bit
+// int lsb = __builtin_ctzll(x);
+// // check if power of two
+// (x > 0 && (x & (x - 1)) == 0);
+// // check k-th bit
+// (x >> k) & 1;
+// // set k-th bit
+// x | (1LL << k);
+// // toggle k-th bit
+// x ^ (1LL << k);
+// // clear k-th bit
+// x & ~(1LL << k);
+bool starts_with(const string& s, const string& pref)
+{
+    return s.size() >= pref.size() && s.substr(0, pref.size()) == pref;
+}
+bool ends_with(const string& s, const string& suff)
+{
+    return s.size() >= suff.size() && s.substr(s.size() - suff.size()) == suff;
+}
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<string> sp;
+    vector<string> a, b;
+    for (int i = 0; i < 2 * n - 2; i ++)
+    {
+        string s;
+        cin >> s;
+        sp.push_back(s);
+        if (s.length() == n - 1) a.push_back(s);
+        if (s.length() == 1) b.push_back(s);
+    }
+    set<string> candidates;
+    candidates.insert(a[0] + b[0]);
+    candidates.insert(a[0] + b[1]);
+    candidates.insert(a[1] + b[0]);
+    candidates.insert(a[1] + b[1]);
+    candidates.insert(b[0] + a[0]);
+    candidates.insert(b[0] + a[1]);
+    candidates.insert(b[1] + a[0]);
+    candidates.insert(b[1] + a[1]); 
+    for (auto it = candidates.begin(); it != candidates.end(); it++)
+    {
+        vector<char> result(2 * n - 2); map<int, vector<int>> len; int p = 0; int s = 0; int b = 0; bool flag = true;
+        for (string str : sp)
+        {
+            if (starts_with(*it, str) && !ends_with(*it, str)) p += 1;
+            else if (!starts_with(*it, str) && ends_with(*it, str)) s += 1;
+            else if (starts_with(*it, str) && ends_with(*it, str)) b += 1;
+            else
+            {
+                flag = false;
+                break;
+            }
+        }
+        if (flag)
+        {
+            if (p > n - 1 || s > n - 1) continue;
+            if (2 * n - 2 - p - s == b)
+            {
+                for (int i = 0; i < 2 * n - 2; i++)
+                {
+                    len[sp[i].length()].push_back(i);
+
+                }
+                for (auto &pr : len)
+                {
+                    if (starts_with(*it, sp[pr.second[0]]) && !ends_with(*it, sp[pr.second[0]])) result[pr.second[0]] = 'P';
+                    else if (!starts_with(*it, sp[pr.second[0]]) && ends_with(*it, sp[pr.second[0]])) result[pr.second[0]] = 'S';
+                    else
+                    {
+                        if (p < n - 1)
+                        {
+                            result[pr.second[0]] = 'P';
+                            p += 1;
+                        }
+                        else
+                        {
+                            result[pr.second[0]] = 'S';
+                            s += 1;
+                        }
+                    }
+                }
+                for (auto &pr : len)
+                {
+                    if (result[pr.second[0]] == 'P') result[pr.second[1]] = 'S';
+                    else result[pr.second[1]] = 'P';
+                }
+                for (char c : result)
+                {
+                    cout << c;
+                }
+                return;
+            }
+        }
+    }
+}
+int32_t main() 
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t = 1;
+    while (t--)
+    {
+        solve();
+    }
+}
