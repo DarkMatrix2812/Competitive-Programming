@@ -285,9 +285,28 @@ Matrix matrixExp(Matrix base, int exp)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+int LOG(int x, int k) 
+{
+    int count = 0;
+    while (x >= k) 
+    {
+        x /= k;
+        count++;
+    }
+    return count;
+}
 void solve()
 {
-    
+    int k, l1, r1, l2, r2;
+    cin >> k >> l1 >> r1 >> l2 >> r2;
+    int ans = 0;
+    int p = 1;
+    while (p <= r2)
+    {
+        ans += max(0LL, min(r1, r2 / p) - max(l1, (l2 + p - 1) / p) + 1);
+        p *= k;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

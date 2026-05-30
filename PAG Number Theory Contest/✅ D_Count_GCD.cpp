@@ -287,7 +287,57 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    int ans = 1; // b[0] must be equal to a[0]
+    for (int i = 1; i < n; i ++)
+    {
+        if (a[i - 1] % a[i] != 0)
+        {
+            cout << 0 << endl;
+            return;
+        }
+        else
+        {
+            int k = a[i - 1] / a[i]; 
+            vector<int> pf;
+            for (long long p = 2; p * p <= k; p++)
+            {
+                if (k % p == 0)
+                {
+                    pf.push_back(p);
+                    while (k % p == 0)
+                    {
+                        k /= p;
+                    }
+                }
+            }
+            if (k > 1) pf.push_back(k);
+            int tmp = m / a[i];
+            for (int mask = 1; mask < (1 << pf.size()); mask++)
+            {
+                int p = 1;
+                int bits = 0;
+                for (int i = 0; i < pf.size(); i++)
+                {
+                    if (mask & (1 << i))
+                    {
+                        p *= pf[i];
+                        bits += 1;
+                    }
+                }
+                if (bits & 1) tmp -= (m / a[i]) / p;
+                else tmp += (m / a[i]) / p;
+            }
+            ans = (ans * tmp) % MOD2;
+        }
+    }
+    cout << ans % MOD2 << endl;
 }
 int32_t main() 
 {

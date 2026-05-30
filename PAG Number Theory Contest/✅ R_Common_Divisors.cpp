@@ -127,49 +127,13 @@ vector<int> factors(int n)
     }
     return f; 
 }
-vector<int> spf;
-void buildSPF(int N)
-{
-    spf.resize(N + 1);
-    for (int i = 0; i <= N; i++)
-    {
-        spf[i] = i;
-    }
-    for (int i = 2; i * i <= N; i++)
-    {
-        if (spf[i] == i)
-        {
-            for (int j = i * i; j <= N; j += i)
-            {
-                if (spf[j] == j)
-                {
-                    spf[j] = i;
-                }
-            }
-        }
-    }
-}
-vector<int> primeFactors(int n)
-{
-    vector<int> pf;
-    while (n > 1)
-    {
-        int p = spf[n];
-        pf.push_back(p);
-        while (n % p == 0)
-        {
-            n /= p;
-        }
-    }
-    return pf;
-}
 vector<int> prefixArr(vector<int>& arr) 
 {
     int n = arr.size();
     vector<int> pref(n + 1, 0);
     for (int i = 1; i <= n; i ++) 
     {
-        pref[i] = pref[i - 1] + arr[i - 1];
+        pref[i] = pref[i - 1] ^ arr[i - 1];
     }
     return pref;
 }
@@ -212,57 +176,6 @@ struct Fenwick {
         return sum;
     }
 };
-struct Matrix
-{
-    int n, m;
-    vector<vector<int>> mat;
-    Matrix(int n, int m)
-    {
-        this->n = n;
-        this->m = m;
-        mat.assign(n, vector<int>(m, 0));
-    }
-};
-Matrix identitymatrix(int n)
-{
-    Matrix I(n, n);
-    for (int i = 0; i < n; i++)
-    {
-        I.mat[i][i] = 1;
-    }
-    return I;
-}
-Matrix multiply(Matrix &A, Matrix &B)
-{
-    Matrix product(A.n, B.m);
-    for (int i = 0; i < A.n; i++)
-    {
-        for (int k = 0; k < A.m; k++)
-        {
-            if (A.mat[i][k] == 0) continue;
-            for (int j = 0; j < B.m; j++)
-            {
-                product.mat[i][j] += (A.mat[i][k] * B.mat[k][j]) % MOD;
-                product.mat[i][j] %= MOD;
-            }
-        }
-    }
-    return product;
-}
-Matrix matrixExp(Matrix base, int exp)
-{
-    Matrix result = identitymatrix(base.n);
-    while (exp > 0)
-    {
-        if (exp & 1)
-        {
-            result = multiply(result, base);
-        }
-        base = multiply(base, base);
-        exp >>= 1;
-    }
-    return result;
-}
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -287,14 +200,32 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> x(n);
+    unordered_map<int, int> freq;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> x[i];
+        freq[x[i]] += 1;
+    }
+    int ans = 1;
+    for (int d = 1; d <= 1e6; d ++)
+    {
+        int cnt = 0;
+        for (int m = d; m <= 1e6; m += d)
+        {
+            cnt += freq[m];
+        }
+        if (cnt >= 2) ans = d;
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

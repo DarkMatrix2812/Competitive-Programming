@@ -11,7 +11,7 @@
 #include <bits/stdc++.h>
 #define int long long
 using namespace std;
-#define MOD 1000000007
+#define MOD 999999893
 #define MOD2 998244353
 vector<int> fact, invfact;
 int binExp(int base, int exp, int M) 
@@ -169,7 +169,7 @@ vector<int> prefixArr(vector<int>& arr)
     vector<int> pref(n + 1, 0);
     for (int i = 1; i <= n; i ++) 
     {
-        pref[i] = pref[i - 1] + arr[i - 1];
+        pref[i] = ((pref[i - 1] + arr[i - 1]) % MOD + MOD) % MOD;
     }
     return pref;
 }
@@ -287,7 +287,22 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    if (n % 2 == 1)
+    {
+        int b = (binExp(2, (n + 4) / 2, MOD) + MOD) % MOD; // coeff. of sqrt(2)
+        int a = (binExp(2, (n + 3) / 2, MOD) - 4 + MOD) % MOD;
+        int den = (a * a % MOD - 2LL * b * b % MOD + MOD) % MOD;
+        cout << (-4LL * a % MOD * modinv(den, MOD) % MOD + MOD) % MOD << endl;
+    }
+    else
+    {
+        int b = (binExp(2, (n + 3) / 2, MOD) + MOD) % MOD; // coeff. of sqrt(2)
+        int a = (binExp(2, (n + 4) / 2, MOD) - 4 + MOD) % MOD;
+        int den = (a * a % MOD - 2LL * b * b % MOD + MOD) % MOD;
+        cout << (-4LL * a % MOD * modinv(den, MOD) % MOD + MOD) % MOD << endl;
+    }
 }
 int32_t main() 
 {

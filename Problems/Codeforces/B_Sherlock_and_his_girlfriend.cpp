@@ -285,16 +285,38 @@ Matrix matrixExp(Matrix base, int exp)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+vector<bool> prime;
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    set<int> distinct;
+    vector<int> color(n + 2);
+    for (int i = 2; i <= n + 1; i ++)
+    {
+        if (prime[i]) 
+        {
+            color[i] = 1;
+            distinct.insert(1);
+        }
+        else 
+        {
+            distinct.insert(2);
+            color[i] = 2;
+        }
+    }
+    cout << distinct.size() << endl;
+    for (int i = 2; i < color.size(); i ++)
+    {
+        cout << color[i] << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
+    prime = sieve(1e6 + 1);
     while (t--)
     {
         solve();

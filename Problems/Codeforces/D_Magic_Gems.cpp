@@ -287,14 +287,36 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    // A_n = B * A_(n - 1)
+    if (n < m)
+    {
+        cout << 1;
+        return;
+    }
+    Matrix B(m, m);
+    B.mat[0][0] = 1;
+    B.mat[0][m - 1] = 1;
+    for (int i = 1; i < m; i++)
+    {
+        B.mat[i][i - 1] = 1;
+    }
+    Matrix res = matrixExp(B, n - m + 1);
+    int ans = 0;
+    // A_n = sum of first row
+    for (int i = 0; i < m; i ++)
+    {
+        ans += res.mat[0][i];
+        ans %= MOD;
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -287,14 +287,63 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    vector<bool> on(n + 1, false);
+    vector<int> conflict(n + 1, 0);
+    for (int i = 0; i < m; i ++)
+    {
+        char op; int x;
+        cin >> op >> x;
+        if (op == '+')
+        {
+            if (on[x]) cout << "Already on" << endl;
+            else
+            {
+                bool flag = 0;
+                vector<int> pf = primeFactors(x);
+                for (int p : pf)
+                {
+                    if (conflict[p]) 
+                    {
+                        cout << "Conflict with " << conflict[p] << endl;
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (flag == 0)
+                {
+                    cout << "Success" << endl;
+                    for (int p : pf)
+                    {
+                        conflict[p]= x;
+                    }
+                    on[x] = true;
+                }
+            }
+        }
+        else
+        {
+            if (on[x]) 
+            {
+                cout << "Success" << endl;
+                on[x] = false;
+                vector<int> pf = primeFactors(x);
+                for (int p : pf)
+                {
+                    conflict[p] = 0;
+                }
+            }
+            else cout << "Already off" << endl;
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
+    buildSPF(1e5 + 1);
     while (t--)
     {
         solve();

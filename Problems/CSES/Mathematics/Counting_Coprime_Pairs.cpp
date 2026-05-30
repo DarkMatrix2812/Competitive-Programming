@@ -287,14 +287,39 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> x(n);
+    unordered_map<int, int> freq;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> x[i];
+        freq[x[i]] += 1;
+    }
+    vector<int> cnt(1e6 + 1, 0);
+    for (int d = 1; d <= 1e6; d++)
+    {
+        for (int m = d; m <= 1e6; m += d)
+        {
+            cnt[d] += freq[m];
+        }
+    }
+    vector<int> ans(1e6 + 1, 0);
+    for (int d = 1e6; d >= 1; d --)
+    {
+        ans[d] = cnt[d] * (cnt[d] - 1) / 2;
+        for (int m = 2 * d; m <= 1e6; m += d)
+        {
+            ans[d] -= ans[m];
+        }
+    }
+    cout << ans[1];
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

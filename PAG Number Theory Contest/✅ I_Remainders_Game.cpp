@@ -183,11 +183,11 @@ vector<int> suffixArr(const vector<int>& arr)
     }
     return suff;
 }
-int gcd(int a, int b)
+__int128 gcd(__int128 a, __int128 b)
 {
-    return (!b ? a : gcd(b, a % b));
+    return b ? gcd(b, a % b) : a;
 }
-int lcm(int a, int b)
+__int128 lcm(__int128 a, __int128 b)
 {
     return a / gcd(a, b) * b;
 }
@@ -287,14 +287,24 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k;
+    cin >> n >> k;
+    vector<int> c(n);
+    __int128 l = 1;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> c[i];
+        l = gcd((__int128)k, lcm((__int128)c[i], l));
+    }
+    // x % l = p => x % k = p % k (given k divides l)
+    if (l == k) cout << "Yes";
+    else cout << "No";
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

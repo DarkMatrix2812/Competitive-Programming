@@ -169,7 +169,7 @@ vector<int> prefixArr(vector<int>& arr)
     vector<int> pref(n + 1, 0);
     for (int i = 1; i <= n; i ++) 
     {
-        pref[i] = pref[i - 1] + arr[i - 1];
+        pref[i] = ((pref[i - 1] + arr[i - 1]) % MOD + MOD) % MOD;
     }
     return pref;
 }
@@ -285,16 +285,29 @@ Matrix matrixExp(Matrix base, int exp)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+int k;
+vector<int> ways(1e5 + 1);
+vector<int> pref;
 void solve()
 {
-    
+    int a, b;
+    cin >> a >> b;
+    cout << ((pref[b + 1] - pref[a]) % MOD + MOD) % MOD << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
+    cin >> t >> k;
+    ways[0] = 1;
+    for (int i = 1; i <= 1e5; i ++)
+    {
+        ways[i] = ways[i - 1];
+        if (i >= k) ways[i] += ways[i - k];
+        ways[i] %= MOD;
+    }
+    pref = prefixArr(ways);
     while (t--)
     {
         solve();

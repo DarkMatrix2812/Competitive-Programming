@@ -287,14 +287,41 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int m, n;
+    cin >> m >> n;
+    vector<int> s(m), l(m);
+    for (int i = 0; i < m; i ++)
+    {
+        cin >> s[i];
+    }
+    for (int i = 0; i < m; i ++)
+    {
+        cin >> l[i];
+    }
+    int x = 0; int y = 0; int z = 0;
+    for (int i = 0; i < m; i ++)
+    {
+        x = (x + (s[i] + l[i]) % MOD * ((s[i] + l[i]) % MOD)) % MOD;
+        y = (y + l[i] % MOD * ((s[i] + l[i]) % MOD)) % MOD;
+        z = (z + l[i] % MOD * (l[i] % MOD)) % MOD;
+    }
+    Matrix M(2, 2);
+    M.mat = {{x, -y}, {y, -z}};
+    Matrix res = matrixExp(M, n - 1);
+    int a = (res.mat[0][0] * (s[0] + l[0]) % MOD + res.mat[0][1] * l[0] % MOD) % MOD;
+    int b = (res.mat[1][0] * (s[0] + l[0]) % MOD + res.mat[1][1] * l[0] % MOD);
+    int ans = 0;
+    for (int i = 0; i < m; i ++)
+    {
+        ans = (ans + a * (s[i] + l[i]) - b * l[i] + MOD) % MOD;
+    }
+    cout << (ans + MOD) % MOD;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -287,14 +287,46 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    vector<pair<int, int>> all; // we don't utilize this, we get MLE if we do - so we update cnt and steps in every BFS directly
+    vector<int> cnt(100001);
+    vector<int> steps(100001);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        queue<pair<int, int>> q;
+        q.push({a[i], 0});
+        vector<bool> seen(100001, false);
+        while (!q.empty())
+        {
+            int x = (q.front()).first;
+            int y = (q.front()).second;
+            q.pop();
+            if (seen[x]) continue;
+            seen[x] = true;
+            cnt[x] += 1;
+            steps[x] += y;      
+            if (2 * x <= 1e5) q.push({2 * x, y + 1});
+            if (x > 0) q.push({x / 2, y + 1});
+        }
+    }
+    int ans = INT_MAX;
+    for (int x = 0; x <= 1e5; x ++)
+    {
+        if (cnt[x] == n)
+        {
+            ans = min(ans, steps[x]);
+        }
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -254,12 +254,9 @@ Matrix matrixExp(Matrix base, int exp)
     Matrix result = identitymatrix(base.n);
     while (exp > 0)
     {
-        if (exp & 1)
-        {
-            result = multiply(result, base);
-        }
+        if (exp % 2 == 1) result = multiply(result, base);
         base = multiply(base, base);
-        exp >>= 1;
+        exp /= 2;
     }
     return result;
 }
@@ -287,14 +284,23 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    if (n == 0)
+    {
+        cout << 0;
+        return;
+    }
+    Matrix T(2, 2);
+    T.mat ={{1, 1}, {1, 0}};
+    Matrix res = matrixExp(T, n);
+    cout << res.mat[0][1];
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

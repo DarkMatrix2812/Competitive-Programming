@@ -287,7 +287,31 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    int curr = a[n - 1];
+    int len = 1;
+    int ans = 0;
+    for (int i = n - 2; i >= 0; )
+    {
+        if (a[i] == curr) 
+        {
+            len += 1;
+            i -= 1;
+        }
+        else
+        {
+            i -= len;
+            len *= 2;
+            ans += 1;
+        }
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
