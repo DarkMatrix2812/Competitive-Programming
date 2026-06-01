@@ -285,9 +285,64 @@ Matrix matrixExp(Matrix base, int exp)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+bool check(int x, vector<int> a, vector<int> b)
+{
+    int cnt = 0; int cnt2 = 0; int cnt3 = 0;
+    for (int i : a)
+    {
+        if (i >= x) cnt += 1;
+    }
+    for (int i : b)
+    {
+        if (i >= x) cnt += 1;
+    }
+    bool consecutive = false;
+    for (int i = 0; i < a.size(); i ++)
+    {
+        if (a[i] >= x && b[i] >= x) 
+        {
+            cnt2 += 1;
+            consecutive = false;
+        }
+        else if ((a[i] >= x && b[i] < x) || (a[i] < x && b[i] >= x)) continue;
+        else 
+        {
+            if (!consecutive)
+            {
+                cnt3 += 1;
+                consecutive = true;
+            }
+        }
+    }
+    if (cnt > a.size() || cnt2 > cnt3) return true;
+    else return false;
+}
 void solve()
 {
-
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> b(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> b[i];
+    }
+    int low = 0; int high = 2e5; int mid = 0; int ans = 0;
+    while (low <= high)
+    {
+        int mid = low + (high - low) / 2;
+        if (check(mid, a, b))
+        {
+            ans = mid;
+            low = mid + 1;
+        }
+        else high = mid - 1;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

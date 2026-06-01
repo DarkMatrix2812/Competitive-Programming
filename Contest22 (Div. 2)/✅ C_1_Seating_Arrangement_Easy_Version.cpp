@@ -287,7 +287,69 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, x, s;
+    cin >> n >> x >> s;
+    string u;
+    cin >> u;
+    int empty = x;
+    priority_queue<int> pq;
+    int a = 0;
+    int ans = 0;
+    for (char c : u)
+    {
+        if (c == 'I')
+        {
+            if (empty > 0)
+            {
+                empty -= 1;
+                ans += 1;
+                if (s > 1) pq.push(s- 1);
+            }
+        }
+        else if (c == 'A')
+        {
+            if (!pq.empty())
+            {
+                int tmp = pq.top();
+                pq.pop();
+                tmp -= 1;
+                ans += 1;
+                a += 1;
+                if (tmp > 0) pq.push(tmp);
+            }
+            else
+            {
+                if (empty > 0)
+                {
+                    empty -= 1;
+                    ans += 1;
+                    if (s > 1) pq.push(s - 1);
+                }
+            }
+        }
+        else
+        {
+            if (!pq.empty())
+            {
+                int tmp = pq.top();
+                pq.pop();
+                tmp -= 1;
+                ans += 1;
+                if (tmp > 0) pq.push(tmp);
+            }
+            else
+            {
+                if (a > 0 && empty > 0)
+                {
+                    a -= 1;
+                    empty -= 1;
+                    ans += 1;
+                    if (s > 1) pq.push(s - 1);
+                }
+            }
+        }
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

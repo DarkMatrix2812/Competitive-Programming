@@ -287,7 +287,27 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> b(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> b[i];
+    }
+    int ans = 0;
+    for (int i = 0; i < n ; i ++)
+    {
+        int tmp1 = a[i];
+        int tmp2 = b[i];
+        a[i] = min(tmp1, tmp2);
+        b[i] = max(tmp1, tmp2);
+    }
+    cout << *max_element(a.begin(), a.end()) + accumulate(b.begin(), b.end(), 0LL) << endl;
 }
 int32_t main() 
 {

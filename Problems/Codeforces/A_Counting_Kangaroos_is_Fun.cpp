@@ -287,14 +287,38 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    vector<int> a;
+    multiset<int> s;
+    for (int i = 0; i < n; i ++)
+    {
+        int x;
+        cin >> x;
+        a.push_back(x);
+    }
+    sort(a.begin(), a.end());
+    for (int i = n / 2; i < n; i ++)
+    {
+        s.insert(a[i]);
+    }
+    int ans = 0;
+    for (int i = 0; i < n / 2; i++)
+    {
+        auto it = s.lower_bound(a[i] * 2);
+        if (it != s.end())
+        {
+            ans += 1;
+            s.erase(it);
+        }
+    }
+    cout << n - ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

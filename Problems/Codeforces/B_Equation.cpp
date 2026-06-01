@@ -287,14 +287,42 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int a, b, c;
+    cin >> a >> b >> c;
+    int D = b * b - 4 * a * c;
+    if (a == 0 && b == 0 && c == 0)
+    {
+        cout << -1 << endl;
+        return;
+    }
+    if (D < 0 || (c != 0 && a == 0 && b == 0))
+    {
+        cout << 0;
+        return;
+    }
+    if (a == 0)
+    {
+        cout << 1 << endl;
+        cout << fixed << setprecision(6) << -(long double)c / b << endl;    
+        return;
+    }
+    else if (D == 0)
+    {
+        cout << 1 << endl;
+        cout << fixed << setprecision(6) << -(long double)b / (2 * a) << endl;
+    }
+    else
+    {
+        cout << 2 << endl;
+        cout << fixed << setprecision(6) << min((-(long double)b - sqrtl(D)) / (2 * a), (-(long double)b + sqrtl(D)) / (2 * a)) << endl;
+        cout << fixed << setprecision(6) << max((-(long double)b - sqrtl(D)) / (2 * a), (-(long double)b + sqrtl(D)) / (2 * a)) << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

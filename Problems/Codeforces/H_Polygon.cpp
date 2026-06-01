@@ -287,14 +287,32 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    sort(a.begin(), a.end());
+    vector<int> pref = prefixArr(a);
+    for (int i = k; i <= n; i ++)
+    {
+        // largest < sum of all other sides
+        int S = pref[i] - pref[i - k];
+        if (a[i - 1] < S - a[i - 1])
+        {
+            cout << "Yes" << endl;
+            return;
+        }
+    }
+    cout << "No" << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

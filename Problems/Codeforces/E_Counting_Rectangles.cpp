@@ -287,7 +287,30 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, q;
+    cin >> n >> q;
+    vector<int> h(n), w(n);
+    vector<vector<int>> grid(1001, vector<int>(1001, 0));
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> h[i] >> w[i];
+        grid[h[i]][w[i]] += h[i] * w[i];
+    }
+    vector<vector<int>> dp(1001, vector<int>(1001, 0)); //dp[x][y] = ans for 0 < hi <= x and 0 < wi <= y
+    for (int i = 1; i <= 1000; i ++)
+    {
+        for (int j = 1; j <= 1000; j ++)
+        {
+            dp[i][j] = dp[i][j - 1] + dp[i - 1][j] - dp[i - 1][j - 1] + grid[i][j];
+        }
+    }
+    for (int i = 0; i < q; i ++)
+    {
+        int h1, w1, h2, w2;
+        cin >> h1 >> w1 >> h2 >> w2;
+        // h1 < hi < h2, w1 < wi < w2
+        cout << dp[h2 - 1][w2 - 1] - dp[h1][w2 - 1] - dp[h2 - 1][w1] + dp[h1][w1] << endl;
+    }
 }
 int32_t main() 
 {

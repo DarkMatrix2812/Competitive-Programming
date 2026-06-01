@@ -287,14 +287,85 @@ Matrix matrixExp(Matrix base, int exp)
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> p = prefixArr(a);
+    vector<int> tmp = p;
+    tmp.erase(tmp.begin());
+    vector<int> lol;
+    for (int i = 0; i < p.size(); i ++)
+    {
+        lol.push_back(i * p[i]);
+    }
+    lol.erase(lol.begin());
+    vector<int> v = prefixArr(lol);
+    vector<int> pp = prefixArr(tmp);
+    vector<int> tmp2 = pp;
+    tmp2.erase(tmp2.begin());
+    vector<int> ppp = prefixArr(tmp2);
+    int q;
+    cin >> q;
+    for (int i = 0; i < q; i ++)
+    {
+        int l, r;
+        cin >> l >> r;
+        int ansr = 0; int ansl = 0;
+        int low = 0; int high = n; int mid = 0; int k = 0;
+        while (low <= high)
+        {
+            int mid = low + (high - low) / 2;
+            if (mid * n - (mid) * (mid - 1) / 2 + 1 <= r)
+            {
+                k = mid;
+                low = mid + 1;
+            }
+            else high = mid - 1;
+        }
+        if (k == 0)
+        {
+            ansr += pp[r];
+        }
+        else
+        {
+            ansr += (k * pp[n] - ppp[k - 1] - n * pp[k - 1] + v[k - 1]);
+        }
+        int remr = (k != 0 ? r - k * n + k * (k - 1) / 2: 0);
+        ansr += (pp[remr + k] - pp[k] - remr * p[k]);
+        l -= 1;
+        low = 0; high = n; mid = 0; k = 0;
+        while (low <= high)
+        {
+            int mid = low + (high - low) / 2;
+            if (mid * n - (mid) * (mid - 1) / 2 + 1 <= l)
+            {
+                k = mid;
+                low = mid + 1;
+            }
+            else high = mid - 1;
+        }
+        if (k == 0)
+        {
+            ansl += pp[l];
+        }
+        else
+        {
+            ansl += (k * pp[n] - ppp[k - 1] - n * pp[k - 1] + v[k - 1]);
+        }
+        int reml = (k != 0 ? l - k * n + k * (k - 1) / 2: 0);
+        ansl += (pp[reml + k] - pp[k] - reml * p[k]);
+        cout << ansr - ansl << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
