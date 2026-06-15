@@ -362,14 +362,30 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n), b(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i] >> b[i];
+    }
+    int total = accumulate(b.begin(), b.end(), 0LL);
+    int A = accumulate(a.begin(), a.end(), 0LL);
+    for (int i = 0; i < n; i ++)
+    {
+        if (total - A + a[i] <= b[i])
+        {
+            cout << i + 1;
+            return;
+        }
+    }
+    cout << "impossible" << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

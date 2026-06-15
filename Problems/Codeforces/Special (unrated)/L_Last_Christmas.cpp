@@ -362,14 +362,50 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    unordered_map<string, array<int, 11>> position;   
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 1; j <= 10; j ++)
+        {
+            string s;
+            cin >> s;
+            position[s][j] += 1;
+        }
+    }
+    map<int, vector<string>> most;
+    for (auto &p : position)
+    {
+        most[accumulate(p.second.begin(), p.second.end(), 0LL)].push_back(p.first);
+    }
+    vector<string> tmp;
+    for (string s : most.rbegin()->second)
+    {
+        tmp.push_back(s);
+    }
+    for (int pos = 1; pos <= 10; pos ++)
+    {
+        int mx = 0;
+        for (string s : tmp)
+        {
+            mx = max(mx, position[s][pos]);
+        }
+        vector<string> cur = tmp;
+        tmp.clear();    
+        for (string s : cur)
+        {
+            if (position[s][pos] == mx) tmp.push_back(s);
+        }
+    }
+    if (tmp.size() == 1) cout << tmp[0];
+    else cout << "tie";
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

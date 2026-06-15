@@ -362,14 +362,50 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int h, w, k, I, t;
+    cin >> h >> w >> k >> I >> t;
+    vector<vector<char>> grid(h, vector<char>(w, '.'));
+    grid[0][0] = 'K';
+    grid[0][1] = 'I';
+    grid[0][2] = 'T';
+    k -= 1;
+    I -= 1;
+    t -= 1;
+    for (int i = 0; i < h; i ++)
+    {
+        for (int j = 0; j < w; j ++)
+        {
+            if (grid[i][j] == '.' && t > 0) 
+            {
+                grid[i][j] = 'T';
+                t -= 1;
+            }
+            else if (grid[i][j] == '.' && k > 0) 
+            {
+                grid[i][j] = 'K';
+                k -= 1;
+            }
+            else if (grid[i][j] == '.' && I > 0) 
+            {
+                grid[i][j] = 'I';
+                I -= 1;
+            }
+        }
+    }
+    for (int i = 0; i < h; i ++)
+    {
+        for (int j = 0; j < w; j ++)
+        {
+            cout << grid[i][j];
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

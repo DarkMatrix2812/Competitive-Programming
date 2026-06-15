@@ -192,30 +192,35 @@ int lcm(int a, int b)
     return a / gcd(a, b) * b;
 }
 vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
+vector<vector<pair<int,int>>> p;
+vector<vector<bool>> vis;
+set<tuple<int,int,int>> bad;
+pair<int,int> last = {-1, -1};
 void bfs(int s)
 {
     int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    d[s] = 0;
-    while(!q.empty())
+    p.assign(n, vector<pair<int,int>>(n, {-1, -1}));
+    vis.assign(n, vector<bool>(n, false));
+    queue<pair<int, int>> q;
+    q.push({0, s});
+    vis[0][s] = true;
+    while (!q.empty())
     {
-        int v = q.front();
+        auto [prev, cur] = q.front();
         q.pop();
-        for(int u : adj[v])
+        if (cur == n - 1)
         {
-            if (!vis[u])
+            last = {prev, cur};
+            return;
+        }
+        for (int nxt : adj[cur])
+        {
+            if (bad.count({prev, cur, nxt})) continue;
+            if (!vis[cur][nxt])
             {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
-                q.push(u);
+                vis[cur][nxt] = true;
+                p[cur][nxt] = {prev, cur};
+                q.push({cur, nxt});
             }
         }
     }
@@ -362,14 +367,50 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m, k;
+    cin >> n >> m >> k;
+    adj.resize(n + 1);
+    for (int i = 0; i < m; i ++)
+    {
+        int x, y;
+        cin >> x >> y;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+    for (int i = 0; i < k; i ++)
+    {
+        int a, b, c;
+        cin >> a >> b >> c;
+        bad.insert({a, b, c});
+    }
+    bfs(1);
+    if (last.first == -1)
+    {
+        cout << -1 << endl;
+    }
+    else
+    {
+        vector<int> path;
+        pair<int,int> cur = last;
+        while (cur.first != -1)
+        {
+            path.push_back(cur.second);
+            cur = p[cur.first][cur.second];
+        }
+        reverse(path.begin(), path.end());
+        cout << path.size() - 1 << endl;
+        for (int x : path)
+        {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

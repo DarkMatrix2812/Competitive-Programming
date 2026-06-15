@@ -191,56 +191,24 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
-void bfs(int s)
-{
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    d[s] = 0;
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop();
-        for(int u : adj[v])
-        {
-            if (!vis[u])
-            {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
-                q.push(u);
-            }
-        }
-    }
-}
-struct Fenwick 
-{
+struct Fenwick {
     int n;
     vector<long long> bit;
-    Fenwick(int n) 
-    {
+
+    Fenwick(int n) {
         this->n = n;
         bit.assign(n + 1, 0);
     }
-    void update(int i, long long val) 
-    {
+
+    void update(int i, long long val) {
         for (; i <= n; i += i & -i)
             bit[i] += val;
     }
-    long long query(int i) 
-    {
+
+    long long query(int i) {
         long long sum = 0;
         for (; i > 0; i -= i & -i)
-        {
             sum += bit[i];
-        }
         return sum;
     }
 };
@@ -295,6 +263,28 @@ Matrix matrixExp(Matrix base, int exp)
     }
     return result;
 }
+// number of 1-bits in x
+// __builtin_popcountll(x);
+// // 1 if popcount is odd, 0 if even
+// __builtin_parityll(x);
+// // count leading zeros in 64-bit
+// __builtin_clzll(x);   // x != 0
+// // count trailing zeros (use: lowest set bit, bit iteration)
+// __builtin_ctzll(x);   // x != 0
+// // index of highest 1-bit (use: power of 2 ≤ x)
+// int msb = 63 - __builtin_clzll(x);
+// // index of lowest 1-bit
+// int lsb = __builtin_ctzll(x);
+// // check if power of two
+// (x > 0 && (x & (x - 1)) == 0);
+// // check k-th bit
+// (x >> k) & 1;
+// // set k-th bit
+// x | (1LL << k);
+// // toggle k-th bit
+// x ^ (1LL << k);
+// // clear k-th bit
+// x & ~(1LL << k);
 struct SparseTable 
 {
     int n;
@@ -338,38 +328,28 @@ struct SparseTable
         return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
     }
 };
-// number of 1-bits in x
-// __builtin_popcountll(x);
-// // 1 if popcount is odd, 0 if even
-// __builtin_parityll(x);
-// // count leading zeros in 64-bit
-// __builtin_clzll(x);   // x != 0
-// // count trailing zeros (use: lowest set bit, bit iteration)
-// __builtin_ctzll(x);   // x != 0
-// // index of highest 1-bit (use: power of 2 ≤ x)
-// int msb = 63 - __builtin_clzll(x);
-// // index of lowest 1-bit
-// int lsb = __builtin_ctzll(x);
-// // check if power of two
-// (x > 0 && (x & (x - 1)) == 0);
-// // check k-th bit
-// (x >> k) & 1;
-// // set k-th bit
-// x | (1LL << k);
-// // toggle k-th bit
-// x ^ (1LL << k);
-// // clear k-th bit
-// x & ~(1LL << k);
 void solve()
 {
-    
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    SparseTable st(a);
+    for (int i = 0; i < q; i ++)
+    {
+        int a, b;
+        cin >> a >> b;
+        cout << st.query_min(a - 1, b - 1) << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

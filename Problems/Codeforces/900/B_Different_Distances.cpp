@@ -191,56 +191,24 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
-void bfs(int s)
-{
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    d[s] = 0;
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop();
-        for(int u : adj[v])
-        {
-            if (!vis[u])
-            {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
-                q.push(u);
-            }
-        }
-    }
-}
-struct Fenwick 
-{
+struct Fenwick {
     int n;
     vector<long long> bit;
-    Fenwick(int n) 
-    {
+
+    Fenwick(int n) {
         this->n = n;
         bit.assign(n + 1, 0);
     }
-    void update(int i, long long val) 
-    {
+
+    void update(int i, long long val) {
         for (; i <= n; i += i & -i)
             bit[i] += val;
     }
-    long long query(int i) 
-    {
+
+    long long query(int i) {
         long long sum = 0;
         for (; i > 0; i -= i & -i)
-        {
             sum += bit[i];
-        }
         return sum;
     }
 };
@@ -295,49 +263,6 @@ Matrix matrixExp(Matrix base, int exp)
     }
     return result;
 }
-struct SparseTable 
-{
-    int n;
-    int max_log;
-    vector<vector<int>> st_min;
-    vector<vector<int>> st_max;
-    vector<int> log_table;
-    SparseTable(const vector<int>& a) 
-    {
-        n = a.size();
-        log_table.assign(n + 1, 0);
-        for (int i = 2; i <= n; i++) 
-        {
-            log_table[i] = log_table[i / 2] + 1;
-        }
-        max_log = log_table[n] + 1; 
-        st_min.assign(n, vector<int>(max_log));
-        st_max.assign(n, vector<int>(max_log));
-        for (int i = 0; i < n; i++) 
-        {
-            st_min[i][0] = a[i];
-            st_max[i][0] = a[i];
-        }
-        for (int j = 1; j < max_log; j++) 
-        {
-            for (int i = 0; i + (1 << j) <= n; i++) 
-            {
-                st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
-                st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
-            }
-        }
-    }
-    int query_min(int L, int R) 
-    {
-        int j = log_table[R - L + 1];
-        return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
-    }
-    int query_max(int L, int R) 
-    {
-        int j = log_table[R - L + 1];
-        return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
-    }
-};
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -362,7 +287,26 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i ++)
+    {
+        cout << i + 1 << " ";
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        cout << i + 1 << " ";
+    }
+    cout << n << " ";
+    for (int i = 1; i < n; i ++)
+    {
+        cout << i << " ";
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        cout << i + 1 << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {

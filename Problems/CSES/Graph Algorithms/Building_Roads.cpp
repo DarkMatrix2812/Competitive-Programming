@@ -196,14 +196,9 @@ vector<int> d, p;
 vector<bool> vis;
 void bfs(int s)
 {
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
     queue<int> q;
     q.push(s);
     vis[s] = true;
-    d[s] = 0;
     while(!q.empty())
     {
         int v = q.front();
@@ -213,8 +208,6 @@ void bfs(int s)
             if (!vis[u])
             {
                 vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
                 q.push(u);
             }
         }
@@ -362,14 +355,37 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    adj.resize(n + 1);
+    vis.assign(n + 1, false);
+    for (int i = 0; i < m; i ++)
+    {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    vector<int> islands;
+    for (int i = 1; i <= n; i ++)
+    {
+        if (!vis[i])
+        {
+            islands.push_back(i);
+            bfs(i);
+        }
+    }
+    cout << islands.size() - 1 << endl;
+    for (int i = 0; i < islands.size() - 1; i ++)
+    {
+        cout << islands[i] << " " << islands[i + 1] << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

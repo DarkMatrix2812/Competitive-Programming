@@ -362,14 +362,42 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    adj.resize(n + 1);
+    for (int i = 0; i < m; i ++)
+    {
+        int x, y;
+        cin >> x >> y;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+    bfs(1);
+    if (!vis[n])
+    {
+        cout << "IMPOSSIBLE" << endl;
+    }
+    else
+    {
+        cout << d[n] + 1 << endl;
+        vector<int> path;
+        for (int v = n; v != -1; v = p[v])
+        {
+            path.push_back(v);
+        }
+        reverse(path.begin(), path.end());
+        for (int x : path)
+        {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

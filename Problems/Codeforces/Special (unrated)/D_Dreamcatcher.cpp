@@ -362,14 +362,17 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    if (n % 2 == 1) cout << (n + 1) / 2;
+    else if (n % 4 == 0) cout << n / 2 - 1;
+    else if (n % 2 == 0) cout << n / 2 + 2;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

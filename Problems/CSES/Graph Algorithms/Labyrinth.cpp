@@ -191,30 +191,27 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
-void bfs(int s)
+vector<vector<vector<pair<int,int>>>> adj;
+vector<vector<int>> d;
+vector<vector<pair<int,int>>> p;
+vector<vector<bool>> vis;
+void bfs(pair<int, int> start, pair<int, int> end)
 {
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    d[s] = 0;
+    queue<pair<int, int>> q;
+    q.push(start);
+    vis[start.first][start.second] = true;
+    d[start.first][start.second] = 0;
     while(!q.empty())
     {
-        int v = q.front();
+        auto v = q.front();
         q.pop();
-        for(int u : adj[v])
+        for(auto u : adj[v.first][v.second])
         {
-            if (!vis[u])
+            if (!vis[u.first][u.second])
             {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
+                vis[u.first][u.second] = true;
+                d[u.first][u.second] = d[v.first][v.second] + 1;
+                p[u.first][u.second] = v;
                 q.push(u);
             }
         }
@@ -362,14 +359,73 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, m;
+    cin >> n >> m;
+    vector<vector<char>> grid(n + 2, vector<char>(m + 2, '#'));
+    adj.assign(n + 2, vector<vector<pair<int,int>>>(m + 2));
+    d.assign(n + 2, vector<int>(m + 2, 0));
+    p.assign(n + 2, vector<pair<int,int>>(m + 2));
+    vis.assign(n + 2, vector<bool>(m + 2, false));
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (grid[i - 1][j] == '.' || grid[i - 1][j] == 'B' || grid[i - 1][j] == 'A') adj[i][j].push_back({i - 1, j});
+            if (grid[i + 1][j] == '.' || grid[i + 1][j] == 'B' || grid[i + 1][j] == 'A') adj[i][j].push_back({i + 1, j});
+            if (grid[i][j + 1] == '.' || grid[i][j + 1] == 'B' || grid[i][j + 1] == 'A') adj[i][j].push_back({i, j + 1});
+            if (grid[i][j - 1] == '.' || grid[i][j - 1] == 'B' || grid[i][j - 1] == 'A') adj[i][j].push_back({i, j - 1});
+        }
+    }
+    pair<int, int> start, stop;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (grid[i][j] == 'A') start = {i, j};
+            else if (grid[i][j] == 'B') stop = {i, j};
+        }
+    }
+    bfs(start, stop);
+    if (!vis[stop.first][stop.second])
+    {
+        cout << "NO" << endl;
+    }
+    else
+    {
+        cout << "YES" << endl;
+        cout << d[stop.first][stop.second] << endl;
+        string path = "";
+        while (stop != start)
+        {
+            auto parent = p[stop.first][stop.second];
+            if (parent.first == stop.first)
+            {
+                if (parent.second > stop.second) path.push_back('L');
+                else path.push_back('R');
+            }
+            else if (parent.second == stop.second)
+            {
+                if (parent.first > stop.first) path.push_back('U');
+                else path.push_back('D');
+            }
+            stop = parent;
+        }
+        reverse(path.begin(), path.end());
+        cout << path << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

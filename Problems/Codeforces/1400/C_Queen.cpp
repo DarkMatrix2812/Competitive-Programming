@@ -191,7 +191,7 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
+vector<vector<pair<int, int>>> adj;
 vector<int> d, p;
 vector<bool> vis;
 void bfs(int s)
@@ -208,14 +208,14 @@ void bfs(int s)
     {
         int v = q.front();
         q.pop();
-        for(int u : adj[v])
+        for(auto &pr : adj[v])
         {
-            if (!vis[u])
+            if (!vis[pr.first])
             {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
-                q.push(u);
+                vis[pr.first] = true;
+                d[pr.first] = d[v] + 1;
+                p[pr.first] = v;
+                q.push(pr.first);
             }
         }
     }
@@ -362,14 +362,49 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    adj.resize(n + 1);
+    unordered_map<int, int> color;
+    for (int i = 1; i <= n; i ++)
+    {
+        int p, c;
+        cin >> p >> c;
+        color[i] = c;
+        if (p == -1) continue;
+        adj[p].push_back({i, c});
+    }
+    vector<int> ans;
+    for (int u = 1; u <= n; u ++)
+    {
+        if (color[u] == 1)
+        {
+            bool allbad = true;
+            for (auto &v : adj[u])
+            {
+                if (v.second == 0)
+                {
+                    allbad = false;
+                    break;
+                }
+            }
+            if (allbad) ans.push_back(u);
+        }
+    }
+    if (ans.empty()) cout << -1;
+    else
+    {
+        for (int x : ans)
+        {
+            cout << x << " ";
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
