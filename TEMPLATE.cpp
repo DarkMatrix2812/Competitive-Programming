@@ -220,6 +220,39 @@ void bfs(int s)
         }
     }
 }
+vector<int> color, tin, tout;
+int timer;
+void dfs(int root)
+{
+    int n = adj.size();
+    color.assign(n, 0);
+    tin.assign(n, -1);
+    tout.assign(n, -1);
+    timer = 0;
+    stack<pair<int,int>> st;
+    st.push({root, 0}); // 0 = enter, 1 = exit
+    while (!st.empty())
+    {
+        auto [v, state] = st.top();
+        st.pop();
+        if (state == 0)
+        {
+            tin[v] = timer++;
+            color[v] = 1;
+            st.push({v, 1});
+            for (int i = (int)adj[v].size() - 1; i >= 0; i--)
+            {
+                int u = adj[v][i];
+                if (color[u] == 0) st.push({u, 0});
+            }
+        }
+        else
+        {
+            color[v] = 2;
+            tout[v] = timer++;
+        }
+    }
+}
 struct Fenwick 
 {
     int n;
