@@ -404,7 +404,43 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    vector<pair<int, int>> v;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        v.push_back({a[i], i});
+    }
+    vector<int> ans(n + 1);
+    ans[0] = 0;
+    sort(v.rbegin(), v.rend());
+    int curr = 1;
+    for (auto &p : v)
+    {
+        if (curr > 0) 
+        {
+            ans[p.second + 1] = curr;
+            curr = -curr;
+        }
+        else 
+        {
+            ans[p.second + 1] = curr;
+            curr = abs(curr) + 1;
+        }
+    }
+    int s = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        s += (2 * abs(ans[i] - ans[0]) * a[i - 1]);
+    }
+    cout << s << endl;
+    for (int x : ans)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {

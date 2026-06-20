@@ -253,14 +253,22 @@ void iterative_dfs(int root)
         }
     }
 }
-void recursive_dfs(int v)
+int m;
+int ans = 0;
+void recursive_dfs(vector<int> &a, int v, int cnt)
 {
     vis[v] = 1;
+    if (a[v] == 1) cnt += 1;
+    else cnt = 0;
+    if (cnt > m) return;
+    bool leaf = true;
     for (int u : adj[v])
     {
         if (vis[u]) continue;
-        recursive_dfs(u);
+        leaf = false;
+        recursive_dfs(a, u, cnt);
     }
+    if (leaf) ans += 1;
 }
 struct Fenwick 
 {
@@ -404,14 +412,30 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n;
+    cin >> n >> m;
+    vector<int> a(n + 1);
+    adj.assign(n + 1, {});
+    vis.assign(n + 1, false);
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> a[i];
+    }
+    for (int i = 0; i < n - 1; i ++)
+    {
+        int x, y;
+        cin >> x >> y;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+    recursive_dfs(a, 1, 0);
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

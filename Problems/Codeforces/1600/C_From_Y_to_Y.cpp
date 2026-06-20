@@ -404,14 +404,79 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int k;
+    cin >> k;
+    int c = 0;
+    while (c * (c - 1) / 2 <= k)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "a";
+    }
+    int rem = k - c * (c - 1) / 2;
+    c = 0;
+    while (c * (c - 1) / 2 <= rem)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "b";
+    }
+    rem = rem - c * (c - 1) / 2;
+    c = 0;
+    while (c * (c - 1) / 2 <= rem)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "c";
+    }
+    rem = rem - c * (c - 1) / 2;
+    c = 0;
+    while (c * (c - 1) / 2 <= rem)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "d";
+    }
+    rem = rem - c * (c - 1) / 2;
+    c = 0;
+    while (c * (c - 1) / 2 <= rem)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "e";
+    }
+    rem = rem - c * (c - 1) / 2;
+    c = 0;
+    while (c * (c - 1) / 2 <= rem)
+    {
+        c += 1;
+    }
+    c -= 1;
+    for (int i = 0; i < c; i ++)
+    {
+        cout << "f";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

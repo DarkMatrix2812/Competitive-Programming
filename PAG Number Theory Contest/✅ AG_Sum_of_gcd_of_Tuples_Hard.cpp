@@ -404,14 +404,26 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-    
+    int n, k;
+    cin >> n >> k;
+    int ans = 0;
+    vector<int> cnt(k + 1, 0);
+    for (int g = k; g >= 1; g --)
+    {
+        cnt[g] = binExp(k / g, n, MOD);
+        for (int m = 2 * g; m <= k; m += g)
+        {
+            cnt[g] = (cnt[g] - cnt[m] + MOD) % MOD;
+        }
+        ans = (ans + g * cnt[g]) % MOD;
+    }
+    cout << ans % MOD;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
