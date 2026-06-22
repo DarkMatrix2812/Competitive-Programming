@@ -274,6 +274,8 @@ You process the subarrays primarily in increasing order of their left endpoint L
 For example, if n = 3, the array B is formed by appending the values: P(1, 1), P(1, 2), P(1, 3), P(2, 2), P(2, 3), P(3, 3). You are given Q queries. 
 Each query consists of two integers x and y. For each query, you need to find the sum of elements B_x + B_(x + 1) + ... + B_y, modulo 10^9 + 7.
 Expected time complexity: O(nlogM + q(logn + logM))*/
+
+// SOLUTION
 void solve()
 {
     int n;
