@@ -404,7 +404,27 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, m;
+    cin >> n >> m;
+    string s;
+    cin >> s;
+    vector<int> ind(m);
+    set<int> st;
+    for (int i = 0; i < m; i ++)
+    {
+        cin >> ind[i];
+        st.insert(ind[i]);
+    }
+    string c;
+    cin >> c;
+    sort(c.begin(), c.end());
+    int i = 0;
+    for (auto it = st.begin(); it != st.end(); it++)
+    {
+        s[*it - 1] = c[i];
+        i += 1;
+    }
+    cout << s << endl;
 }
 int32_t main() 
 {

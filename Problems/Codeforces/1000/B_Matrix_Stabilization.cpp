@@ -404,7 +404,71 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> a(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < m; j ++)
+        {
+            cin >> a[i][j];
+        }
+    }
+    if (n == 1 && m == 1)
+    {
+        cout << a[0][0] << endl;
+        return;
+    }
+    if (n == 1)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            int mx;
+            if (j == 0) mx = a[0][1];
+            else if(j == m - 1) mx = a[0][m - 2];
+            else mx = max(a[0][j - 1], a[0][j + 1]);
+            a[0][j] = min(a[0][j], mx);
+        }
+    }
+    else if (m == 1)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            int mx;
+            if (i == 0) mx = a[1][0];
+            else if (i == n - 1) mx = a[n - 2][0];
+            else mx = max(a[i - 1][0], a[i + 1][0]);
+            a[i][0] = min(a[i][0], mx);
+        }
+    }
+    else
+    {
+        for (int i = 0; i < n; i ++)
+        {
+            for (int j = 0; j < m; j ++)
+            {
+                int mx = 0;
+                if (i == 0 && j == 0) mx = max(a[0][1], a[1][0]);
+                else if (i == 0 && j == m - 1) mx = max(a[0][m - 2], a[1][m - 1]);
+                else if (i == n - 1 && j == 0) mx = max(a[n - 2][0], a[n - 1][1]);
+                else if(i == n - 1 && j == m - 1) mx = max(a[n - 2][m - 1], a[n - 1][m - 2]);
+                else if (i == 0) mx = max({a[i][j - 1], a[i][j + 1], a[i + 1][j]});
+                else if (i == n - 1) mx = max({a[i][j - 1], a[i][j + 1], a[i - 1][j]});
+                else if (j == 0) mx = max({a[i - 1][j], a[i + 1][j], a[i][j + 1]});
+                else if (j == m - 1) mx = max({a[i - 1][j], a[i + 1][j], a[i][j - 1]});
+                else mx = max({a[i - 1][j], a[i + 1][j], a[i][j - 1], a[i][j + 1]});
+                a[i][j] = min(a[i][j], mx);
+            }
+        }
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < m; j ++)
+        {
+            cout << a[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {

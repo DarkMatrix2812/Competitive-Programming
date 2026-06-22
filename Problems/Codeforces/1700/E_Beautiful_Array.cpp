@@ -404,7 +404,93 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    map<int, vector<int>> bucket;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    sort(a.begin(), a.end());
+    for (int x : a)
+    {
+        bucket[x % k].push_back(x);
+    }
+    if (n % 2 == 1)
+    {
+        int cnt = 0;
+        for (auto &p : bucket)
+        {
+            if (p.second.size() % 2 == 1) cnt += 1;
+        }
+        if (cnt != 1)
+        {
+            cout << -1 << endl;
+            return;
+        }
+        else 
+        {
+            int ans = 0;
+            for (auto &p : bucket)
+            {
+                if (p.second.size() % 2 == 0)
+                {
+                    for (int i = 0; i < p.second.size(); i += 2)
+                    {
+                        ans += (p.second[i + 1] - p.second[i]) / k;
+                    }
+                }
+                else // the one bucket with odd size
+                {
+                    vector<int> pref_even(p.second.size(), 0);
+                    vector<int> pref_odd(p.second.size(), 0);
+                    for(int i = 1; i < p.second.size(); i++)
+                    {
+                        pref_even[i] = pref_even[i - 1];
+                        pref_odd[i] = pref_odd[i - 1];
+                        if (i % 2 == 1) pref_odd[i] += (p.second[i] - p.second[i - 1]) / k;
+                        else pref_even[i] += (p.second[i] - p.second[i - 1]) / k;
+                    }
+                    int mn = INT_MAX;
+                    for (int idx = 0; idx < p.second.size(); idx += 2)
+                    {
+                        int sum = 0;
+                        if (idx > 0) sum += pref_odd[idx - 1];
+                        sum += pref_even.back() - pref_even[idx];
+                        mn = min(mn, sum);
+                    }
+                    ans += mn;
+                }
+            }
+            cout << ans << endl;
+        }
+    }
+    else
+    {
+        int cnt = 0;
+        for (auto &p : bucket)
+        {
+            if (p.second.size() % 2 == 1) cnt += 1;
+        }
+        if (cnt != 0)
+        {
+            cout << -1 << endl;
+            return;
+        }
+        else // all buckets size must be even
+        {
+            int ans = 0;
+            for (auto &p : bucket)
+            {
+                for (int i = 0; i < p.second.size(); i += 2)
+                {
+                    ans += (p.second[i + 1] - p.second[i]) / k;
+                }
+            }
+            cout << ans << endl;
+        }
+    }
 }
 int32_t main() 
 {

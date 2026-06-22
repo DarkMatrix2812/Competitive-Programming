@@ -402,9 +402,76 @@ struct SparseTable
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+
+int n;
+vector<pair<int, int>> bridges;
+// cp-algo credits:
+void IS_BRIDGE(int v, int to)
+{
+    bridges.push_back({v, to});
+} // some function to process the found bridge
+vector<bool> visited;
+vector<int> low;
+vector<int> sz;
+void dfs(int v, int p = -1) {
+    sz[v] = 1;
+    visited[v] = true;
+    tin[v] = low[v] = timer++;
+    bool parent_skipped = false;
+    for (int to : adj[v]) {
+        if (to == p && !parent_skipped) {
+            parent_skipped = true;
+            continue;
+        }
+        if (visited[to]) {
+            low[v] = min(low[v], tin[to]);
+        } else {
+            dfs(to, v);
+            sz[v] += sz[to];
+            low[v] = min(low[v], low[to]);
+            if (low[to] > tin[v])
+                IS_BRIDGE(v, to);
+        }
+    }
+}
+
+void find_bridges() {
+    timer = 0;
+    sz.assign(n + 1, 0);
+    visited.assign(n + 1, false);
+    tin.assign(n + 1, -1);
+    low.assign(n + 1, -1);
+    for (int i = 1; i <= n; ++i) {
+        if (!visited[i])
+            dfs(i);
+    }
+}
 void solve()
 {
-
+    int m;
+    cin >> n >> m;
+    adj.assign(n + 1, {});
+    visited.resize(n + 1, {});
+    tin.resize(n + 1, {});
+    low.resize(n + 1, {});
+    sz.resize(n + 1, {});
+    bridges.clear();
+    for (int i = 0; i < m; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    find_bridges();
+    int ans = n * (n - 1) / 2;
+    for (auto &p : bridges)
+    {
+        int x = min(sz[p.second], sz[p.first]);
+        int y = n - x;
+        ans = min(ans, x * (x - 1) / 2 + y * (y - 1) / 2);
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

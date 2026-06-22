@@ -404,7 +404,50 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    if (n == 2)
+    {
+        cout << stoi(s) << endl;
+        return;
+    }
+    int ans = INT_MAX;
+    for (int idx = 0; idx < n - 1; idx ++)
+    {
+        vector<int> nums;
+        for (int i = 0; i < n; i ++)
+        {
+            if (i == idx) 
+            {
+                nums.push_back(stoi(s.substr(idx, 2)));
+                i += 1;
+            }
+            else nums.push_back(s[i] - '0');
+        }
+        int tmp = 0;
+        bool one = true;
+        bool zero = false;
+        for (int num : nums) 
+        {
+            if (num > 1) 
+            {
+                tmp += num;
+                one = false;
+            }
+            if (num == 0)
+            {
+                zero = true;
+                one = false;
+                break;
+            }
+        }
+        if (zero) tmp = 0;
+        if (one) tmp = 1;
+        ans = min(ans, tmp);
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

@@ -191,7 +191,7 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
+vector<vector<pair<int, int>>> adj;
 vector<int> d, p;
 vector<bool> vis;
 void bfs(int s)
@@ -208,58 +208,16 @@ void bfs(int s)
     {
         int v = q.front();
         q.pop();
-        for(int u : adj[v])
+        for(auto [u, w] : adj[v])
         {
             if (!vis[u])
             {
                 vis[u] = true;
-                d[u] = d[v] + 1;
+                d[u] = d[v] + w;
                 p[u] = v;
                 q.push(u);
             }
         }
-    }
-}
-vector<int> color, tin, tout;
-int timer;
-void iterative_dfs(int root)
-{
-    int n = adj.size();
-    color.assign(n, 0);
-    tin.assign(n, -1);
-    tout.assign(n, -1);
-    timer = 0;
-    stack<pair<int,int>> st;
-    st.push({root, 0}); // 0 = enter, 1 = exit
-    while (!st.empty())
-    {
-        auto [v, state] = st.top();
-        st.pop();
-        if (state == 0)
-        {
-            tin[v] = timer++;
-            color[v] = 1;
-            st.push({v, 1});
-            for (int i = (int)adj[v].size() - 1; i >= 0; i--)
-            {
-                int u = adj[v][i];
-                if (color[u] == 0) st.push({u, 0});
-            }
-        }
-        else
-        {
-            color[v] = 2;
-            tout[v] = timer++;
-        }
-    }
-}
-void recursive_dfs(int v)
-{
-    vis[v] = 1;
-    for (int u : adj[v])
-    {
-        if (vis[u]) continue;
-        recursive_dfs(u);
     }
 }
 struct Fenwick 
@@ -404,14 +362,29 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    adj.resize(n + 1, {});
+    for (int i = 0; i < n - 1; i ++)
+    {
+        int a, b, c;
+        cin >> a >> b >> c;
+        adj[a].push_back({b, c});
+        adj[b].push_back({a, c});
+    }
+    bfs(0);
+    int ans = 0;
+    for (int node = 1; node <= n - 1; node ++)
+    {
+        ans = max(ans, d[node]);
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -404,14 +404,46 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    vector<vector<pair<int,int>>> adj(n + 1);
+    int total = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        int a, b, c;
+        cin >> a >> b >> c;
+        adj[a].push_back({b, 0});
+        adj[b].push_back({a, c});
+        total += c;
+    }
+    int cur = 1;
+    int par = 0;
+    int cost = 0;
+    while (true)
+    {
+        int nxt;
+        int w;
+        for (int i = 0; i < 2; i ++)
+        {
+            if (adj[cur][i].first != par)
+            {
+                nxt = adj[cur][i].first;
+                w = adj[cur][i].second;
+                break;
+            }
+        }
+        cost += w;
+        par = cur;
+        cur = nxt;
+        if (cur == 1) break;
+    }
+    cout << min(cost, total - cost);
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

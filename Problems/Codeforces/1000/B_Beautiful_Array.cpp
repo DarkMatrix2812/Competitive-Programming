@@ -404,7 +404,31 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, k, b, s;
+    cin >> n >> k >> b >> s;
+    vector<int> ans(n, 0);
+    if (s < b * k) 
+    {
+        cout << -1 << endl;
+        return;
+    }
+    ans[0] = min(s, b * k + k - 1);
+    s -= ans[0];
+    for (int i = 1; i < n; i ++)
+    {
+        ans[i] = min(s, k - 1);
+        s -= ans[i];
+    }
+    if (s > 0)
+    {
+        cout << -1 << endl;
+        return;
+    }
+    for (int x : ans)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {

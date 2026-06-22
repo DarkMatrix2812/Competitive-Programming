@@ -191,15 +191,12 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
+unordered_map<int, vector<int>> adj;
+unordered_map<int, int> p, d;
+unordered_map<int, bool> vis;
 void bfs(int s)
 {
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
+    p[s] = -1;
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -404,14 +401,59 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    unordered_map<int, int> freq;
+    for (int i = 0; i < n; i ++)
+    {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+        freq[a] += 1;
+        freq[b] += 1;
+    }
+    vector<int> endpoints;
+    for (auto &p : freq)
+    {
+        if (p.second == 1) endpoints.push_back(p.first);
+    }
+    bfs(endpoints[0]);
+    if (vis[endpoints[1]])
+    {
+        vector<int> path;
+        for (int v = endpoints[1]; v != -1; v = p[v])
+        {
+            path.push_back(v);
+        }
+        reverse(path.begin(), path.end());
+        for (int x : path)
+        {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
+    else
+    {
+        bfs(endpoints[1]);
+        vector<int> path;
+        for (int v = endpoints[0]; v != -1; v = p[v])
+        {
+            path.push_back(v);
+        }
+        reverse(path.begin(), path.end());
+        for (int x : path)
+        {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

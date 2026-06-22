@@ -191,15 +191,12 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
-vector<int> d, p;
-vector<bool> vis;
+unordered_map<int, vector<int>> adj;
+unordered_map<int, int> p, d;
+unordered_map<int, bool> vis;
 void bfs(int s)
 {
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
+    p[s] = -1;
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -402,16 +399,44 @@ struct SparseTable
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+void build(int x)
+{
+    if (x > 1e9) return;
+    adj[x].push_back(2 * x);
+    adj[2 * x].push_back(x);
+    adj[x].push_back(10 * x + 1);
+    adj[10 * x + 1].push_back(x);
+    build(2 * x);
+    build(10 * x + 1);
+}
 void solve()
 {
-
+    int a, b;
+    cin >> a >> b;
+    build(a);
+    bfs(a);
+    if (!vis[b]) cout << "NO";
+    else
+    {
+        cout << "YES" << endl;
+        vector<int> path;
+        for (int v = b; v != -1; v = p[v])
+        {
+            path.push_back(v);
+        }
+        cout << path.size() << endl;
+        reverse(path.begin(), path.end());
+        for (int x : path)
+        {
+            cout << x << " ";
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

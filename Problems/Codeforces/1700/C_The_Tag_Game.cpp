@@ -404,14 +404,41 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n, x;
+    cin >> n >> x;
+    adj.resize(n + 1, {});
+    for (int i = 0; i < n - 1; i ++)
+    {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    bfs(1);
+    vector<int> d1(n + 1);
+    for (int node = 1; node <= n; node ++)
+    {
+        d1[node] = d[node];
+    }
+    d.clear();
+    bfs(x);
+    vector<int> dx(n + 1);
+    for (int node = 1; node <= n; node ++)
+    {
+        dx[node] = d[node];
+    }
+    int mx = 0;
+    for (int node = 1; node <= n; node ++)
+    {
+        if (d1[node] > dx[node]) mx = max(mx, d1[node]);
+    }
+    cout << 2 * mx;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

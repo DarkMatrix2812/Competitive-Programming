@@ -191,75 +191,20 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-vector<vector<int>> adj;
+vector<vector<pair<int, int>>> adj;
 vector<int> d, p;
 vector<bool> vis;
-void bfs(int s)
+vector<int> color;
+void dfs(int u, int p, int pc)
 {
-    int n = adj.size();
-    d.assign(n, -1);
-    p.assign(n, -1);
-    vis.assign(n, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    d[s] = 0;
-    while(!q.empty())
+    int c = 1;
+    for (auto [v, id] : adj[u])
     {
-        int v = q.front();
-        q.pop();
-        for(int u : adj[v])
-        {
-            if (!vis[u])
-            {
-                vis[u] = true;
-                d[u] = d[v] + 1;
-                p[u] = v;
-                q.push(u);
-            }
-        }
-    }
-}
-vector<int> color, tin, tout;
-int timer;
-void iterative_dfs(int root)
-{
-    int n = adj.size();
-    color.assign(n, 0);
-    tin.assign(n, -1);
-    tout.assign(n, -1);
-    timer = 0;
-    stack<pair<int,int>> st;
-    st.push({root, 0}); // 0 = enter, 1 = exit
-    while (!st.empty())
-    {
-        auto [v, state] = st.top();
-        st.pop();
-        if (state == 0)
-        {
-            tin[v] = timer++;
-            color[v] = 1;
-            st.push({v, 1});
-            for (int i = (int)adj[v].size() - 1; i >= 0; i--)
-            {
-                int u = adj[v][i];
-                if (color[u] == 0) st.push({u, 0});
-            }
-        }
-        else
-        {
-            color[v] = 2;
-            tout[v] = timer++;
-        }
-    }
-}
-void recursive_dfs(int v)
-{
-    vis[v] = 1;
-    for (int u : adj[v])
-    {
-        if (vis[u]) continue;
-        recursive_dfs(u);
+        if (v == p) continue;
+        if (c == pc) c += 1;
+        color[id] = c;
+        dfs(v, u, c);
+        c += 1;
     }
 }
 struct Fenwick 
@@ -404,14 +349,44 @@ struct SparseTable
 // x & ~(1LL << k);
 void solve()
 {
-
+    int n;
+    cin >> n;
+    adj.resize(n + 1, {});
+    color.resize(n + 1);
+    for (int i = 0; i < n - 1; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back({v, i + 1});
+        adj[v].push_back({u, i + 1});
+    }
+    int ans = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        ans = max(ans, (int)adj[i].size());
+    }
+    dfs(1, 0, 0);
+    cout << ans << endl;
+    vector<vector<int>> v(n + 1);
+    for (int i = 1; i <= n; i ++)
+    {
+        v[color[i]].push_back(i);
+    }
+    for (int c = 1; c <= ans; c ++)
+    {
+        cout << v[c].size() << " ";
+        for (int i : v[c])
+        {
+            cout << i << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
