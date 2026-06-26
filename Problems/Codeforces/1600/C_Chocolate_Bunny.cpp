@@ -427,13 +427,44 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> p(n + 1, -1);
+    // compare 2 values at a time using two pointers => 2 * (n - 1)
+    int l = 1; int r = 2;
+    while (r <= n)
+    {
+        cout << "? " << l << " " << r << endl;
+        int c1;
+        cin >> c1;
+        cout << "? " << r << " " << l << endl;
+        int c2;
+        cin >> c2;
+        int num = max(c1, c2);
+        if (num == c1) 
+        {
+            p[l] = c1;
+            l = r;
+            r += 1;
+        }
+        else 
+        {
+            p[r] = c2;
+            r += 1;
+        }
+    }
+    p[l] = n;
+    cout << "! ";
+    for (int i = 1; i <= n ; i ++)
+    {
+        cout << p[i] << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

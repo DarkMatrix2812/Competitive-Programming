@@ -13,8 +13,6 @@
 using namespace std;
 #define MOD 1000000007
 #define MOD2 998244353
-
-// --- MATH ---
 vector<int> fact, invfact;
 int binExp(int base, int exp, int M) 
 {
@@ -193,8 +191,6 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-
-// --- GRAPHS ---
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
@@ -290,118 +286,124 @@ void dijkstra(int s)
         }
     }
 }
-
-// --- DSU ---
-vector<int> parent;
-vector<int> sz; 
-void make_set(int v) 
+struct Fenwick 
 {
-    parent[v] = v;
-    sz[v] = 1;
-}
-int find_set(int v) 
-{
-    if (v == parent[v]) return v;
-    return parent[v] = find_set(parent[v]);
-}
-void union_sets(int a, int b) 
-{
-    a = find_set(a);
-    b = find_set(b);
-    if (a != b) 
+    int n;
+    vector<long long> bit;
+    Fenwick(int n) 
     {
-        if (sz[a] < sz[b]) swap(a, b);
-        parent[b] = a;
-        sz[a] += sz[b];
+        this->n = n;
+        bit.assign(n + 1, 0);
     }
-}
-
-// --- FENWICK TREE (BIT) ---
-int bit_n;
-vector<int> bit_arr;
-void fenwick_update(int i, int val) 
+    void update(int i, long long val) 
+    {
+        for (; i <= n; i += i & -i)
+            bit[i] += val;
+    }
+    long long query(int i) 
+    {
+        long long sum = 0;
+        for (; i > 0; i -= i & -i)
+        {
+            sum += bit[i];
+        }
+        return sum;
+    }
+};
+struct Matrix
 {
-    for (; i <= bit_n; i += i & -i) bit_arr[i] += val;
-}
-int fenwick_query(int i) 
+    int n, m;
+    vector<vector<int>> mat;
+    Matrix(int n, int m)
+    {
+        this->n = n;
+        this->m = m;
+        mat.assign(n, vector<int>(m, 0));
+    }
+};
+Matrix identitymatrix(int n)
 {
-    int sum = 0;
-    for (; i > 0; i -= i & -i) sum += bit_arr[i];
-    return sum;
-}
-
-// --- MATRIX OPERATIONS ---
-vector<vector<int>> identityMatrix(int n) 
-{
-    vector<vector<int>> I(n, vector<int>(n, 0));
-    for (int i = 0; i < n; i++) I[i][i] = 1;
+    Matrix I(n, n);
+    for (int i = 0; i < n; i++)
+    {
+        I.mat[i][i] = 1;
+    }
     return I;
 }
-vector<vector<int>> matrixMultiply(vector<vector<int>> &A, vector<vector<int>> &B) 
+Matrix multiply(Matrix &A, Matrix &B)
 {
-    int n = A.size(), m = B[0].size(), K = A[0].size();
-    vector<vector<int>> product(n, vector<int>(m, 0));
-    for (int i = 0; i < n; i++) 
+    Matrix product(A.n, B.m);
+    for (int i = 0; i < A.n; i++)
     {
-        for (int k = 0; k < K; k++) 
+        for (int k = 0; k < A.m; k++)
         {
-            if (A[i][k] == 0) continue;
-            for (int j = 0; j < m; j++) 
+            if (A.mat[i][k] == 0) continue;
+            for (int j = 0; j < B.m; j++)
             {
-                product[i][j] = (product[i][j] + A[i][k] * B[k][j]) % MOD;
+                product.mat[i][j] += (A.mat[i][k] * B.mat[k][j]) % MOD;
+                product.mat[i][j] %= MOD;
             }
         }
     }
     return product;
 }
-vector<vector<int>> matrixExp(vector<vector<int>> base, int exp) 
+Matrix matrixExp(Matrix base, int exp)
 {
-    vector<vector<int>> result = identityMatrix(base.size());
-    while (exp > 0) 
+    Matrix result = identitymatrix(base.n);
+    while (exp > 0)
     {
-        if (exp & 1) result = matrixMultiply(result, base);
-        base = matrixMultiply(base, base);
+        if (exp & 1)
+        {
+            result = multiply(result, base);
+        }
+        base = multiply(base, base);
         exp >>= 1;
     }
     return result;
 }
-
-// --- SPARSE TABLE ---
-int st_n, max_log;
-vector<vector<int>> st_min, st_max;
-vector<int> log_table;
-void buildSparseTable(vector<int>& a) 
+struct SparseTable 
 {
-    st_n = a.size();
-    log_table.assign(st_n + 1, 0);
-    for (int i = 2; i <= st_n; i++) log_table[i] = log_table[i / 2] + 1;
-    max_log = log_table[st_n] + 1; 
-    st_min.assign(st_n, vector<int>(max_log));
-    st_max.assign(st_n, vector<int>(max_log));
-    for (int i = 0; i < st_n; i++) 
+    int n;
+    int max_log;
+    vector<vector<int>> st_min;
+    vector<vector<int>> st_max;
+    vector<int> log_table;
+    SparseTable(const vector<int>& a) 
     {
-        st_min[i][0] = a[i];
-        st_max[i][0] = a[i];
-    }
-    for (int j = 1; j < max_log; j++) 
-    {
-        for (int i = 0; i + (1 << j) <= st_n; i++) 
+        n = a.size();
+        log_table.assign(n + 1, 0);
+        for (int i = 2; i <= n; i++) 
         {
-            st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
-            st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
+            log_table[i] = log_table[i / 2] + 1;
+        }
+        max_log = log_table[n] + 1; 
+        st_min.assign(n, vector<int>(max_log));
+        st_max.assign(n, vector<int>(max_log));
+        for (int i = 0; i < n; i++) 
+        {
+            st_min[i][0] = a[i];
+            st_max[i][0] = a[i];
+        }
+        for (int j = 1; j < max_log; j++) 
+        {
+            for (int i = 0; i + (1 << j) <= n; i++) 
+            {
+                st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
+                st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
+            }
         }
     }
-}
-int query_min(int L, int R) 
-{
-    int j = log_table[R - L + 1];
-    return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
-}
-int query_max(int L, int R) 
-{
-    int j = log_table[R - L + 1];
-    return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
-}
+    int query_min(int L, int R) 
+    {
+        int j = log_table[R - L + 1];
+        return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
+    }
+    int query_max(int L, int R) 
+    {
+        int j = log_table[R - L + 1];
+        return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
+    }
+};
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -426,14 +428,26 @@ int query_max(int L, int R)
 // x & ~(1LL << k);
 void solve()
 {
-    // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    adjd.assign(n + 1, {});
+    for (int i = 1; i <= m; i ++)
+    {
+        int a, b, c;
+        cin >> a >> b >> c;
+        adjd[a].push_back({b, c});
+    }
+    dijkstra(1);
+    for (int i = 1; i <= n; i ++)
+    {
+        cout << dist[i] << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

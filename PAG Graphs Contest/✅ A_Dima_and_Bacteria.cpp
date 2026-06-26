@@ -424,16 +424,79 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+int type(int x, vector<int> &p)
+{
+    auto idx = lower_bound(p.begin(), p.end(), x);
+    return distance(p.begin(), idx);
+}
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m, k;
+    cin >> n >> m >> k;
+    vector<int> c(k);
+    for (int i = 0; i < k; i ++)
+    {
+        cin >> c[i];
+    }
+    vector<int> pref = prefixArr(c);
+    // we need floyd warshall on types graph
+    vector<vector<int>> distances(k + 1, vector<int>(k + 1, INT_MAX));
+    parent.resize(n + 1);
+    sz.resize(n + 1);
+    for (int node = 1; node <= n; node ++)
+    {
+        make_set(node);
+    }
+    for (int i = 0; i < m; i ++)
+    {
+        int u, v, m;
+        cin >> u >> v >> m;
+        if (m == 0) union_sets(u, v);
+        distances[type(u, pref)][type(v, pref)] = min(distances[type(u, pref)][type(v, pref)], m);
+        distances[type(v, pref)][type(u, pref)] = min(distances[type(v, pref)][type(u, pref)], m);
+    }
+    vector<int> root(k + 1, -1);
+    for (int v = 1; v <= n; v++)
+    {
+        int t = type(v, pref);
+        if (root[t] == -1) root[t] = find_set(v);
+        else if (root[t] != find_set(v))
+        {
+            cout << "No" << endl;
+            return;
+        }
+    }
+    for (int i = 1; i <= k; i++)
+    {
+        distances[i][i] = 0;
+    }
+    for (int tmp = 1; tmp <= k; ++tmp) 
+    {
+        for (int i = 1; i <= k; ++i) 
+        {
+            for (int j = 1; j <= k; ++j) 
+            {
+                if (distances[i][tmp] == INT_MAX || distances[tmp][j] == INT_MAX) continue;
+                distances[i][j] = min(distances[i][j], distances[i][tmp] + distances[tmp][j]); 
+            }
+        }
+    }
+    cout << "Yes" << endl;
+    for (int i = 1; i <= k; i ++)
+    {
+        for (int j = 1; j <= k; j ++)
+        {
+            cout << (distances[i][j] == INT_MAX ? -1 : distances[i][j]) << " ";
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

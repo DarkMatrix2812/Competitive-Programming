@@ -13,8 +13,6 @@
 using namespace std;
 #define MOD 1000000007
 #define MOD2 998244353
-
-// --- MATH ---
 vector<int> fact, invfact;
 int binExp(int base, int exp, int M) 
 {
@@ -193,8 +191,6 @@ int lcm(int a, int b)
 {
     return a / gcd(a, b) * b;
 }
-
-// --- GRAPHS ---
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
@@ -266,142 +262,124 @@ void recursive_dfs(int v)
         recursive_dfs(u);
     }
 }
-vector<vector<pair<int,int>>> adjd;
-vector<int> dist;
-void dijkstra(int s)
+struct Fenwick 
 {
-    int n = adjd.size();
-    dist.assign(n, LLONG_MAX);
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    dist[s] = 0;
-    pq.push({0, s});
-    while(!pq.empty())
+    int n;
+    vector<long long> bit;
+    Fenwick(int n) 
     {
-        auto [d, v] = pq.top();
-        pq.pop();
-        if(d != dist[v]) continue;
-        for(auto [u, w] : adjd[v])
+        this->n = n;
+        bit.assign(n + 1, 0);
+    }
+    void update(int i, long long val) 
+    {
+        for (; i <= n; i += i & -i)
+            bit[i] += val;
+    }
+    long long query(int i) 
+    {
+        long long sum = 0;
+        for (; i > 0; i -= i & -i)
         {
-            if(dist[u] > d + w)
-            {
-                dist[u] = d + w;
-                pq.push({dist[u], u});
-            }
+            sum += bit[i];
         }
+        return sum;
     }
-}
-
-// --- DSU ---
-vector<int> parent;
-vector<int> sz; 
-void make_set(int v) 
+};
+struct Matrix
 {
-    parent[v] = v;
-    sz[v] = 1;
-}
-int find_set(int v) 
-{
-    if (v == parent[v]) return v;
-    return parent[v] = find_set(parent[v]);
-}
-void union_sets(int a, int b) 
-{
-    a = find_set(a);
-    b = find_set(b);
-    if (a != b) 
+    int n, m;
+    vector<vector<int>> mat;
+    Matrix(int n, int m)
     {
-        if (sz[a] < sz[b]) swap(a, b);
-        parent[b] = a;
-        sz[a] += sz[b];
+        this->n = n;
+        this->m = m;
+        mat.assign(n, vector<int>(m, 0));
     }
-}
-
-// --- FENWICK TREE (BIT) ---
-int bit_n;
-vector<int> bit_arr;
-void fenwick_update(int i, int val) 
+};
+Matrix identitymatrix(int n)
 {
-    for (; i <= bit_n; i += i & -i) bit_arr[i] += val;
-}
-int fenwick_query(int i) 
-{
-    int sum = 0;
-    for (; i > 0; i -= i & -i) sum += bit_arr[i];
-    return sum;
-}
-
-// --- MATRIX OPERATIONS ---
-vector<vector<int>> identityMatrix(int n) 
-{
-    vector<vector<int>> I(n, vector<int>(n, 0));
-    for (int i = 0; i < n; i++) I[i][i] = 1;
+    Matrix I(n, n);
+    for (int i = 0; i < n; i++)
+    {
+        I.mat[i][i] = 1;
+    }
     return I;
 }
-vector<vector<int>> matrixMultiply(vector<vector<int>> &A, vector<vector<int>> &B) 
+Matrix multiply(Matrix &A, Matrix &B)
 {
-    int n = A.size(), m = B[0].size(), K = A[0].size();
-    vector<vector<int>> product(n, vector<int>(m, 0));
-    for (int i = 0; i < n; i++) 
+    Matrix product(A.n, B.m);
+    for (int i = 0; i < A.n; i++)
     {
-        for (int k = 0; k < K; k++) 
+        for (int k = 0; k < A.m; k++)
         {
-            if (A[i][k] == 0) continue;
-            for (int j = 0; j < m; j++) 
+            if (A.mat[i][k] == 0) continue;
+            for (int j = 0; j < B.m; j++)
             {
-                product[i][j] = (product[i][j] + A[i][k] * B[k][j]) % MOD;
+                product.mat[i][j] += (A.mat[i][k] * B.mat[k][j]) % MOD;
+                product.mat[i][j] %= MOD;
             }
         }
     }
     return product;
 }
-vector<vector<int>> matrixExp(vector<vector<int>> base, int exp) 
+Matrix matrixExp(Matrix base, int exp)
 {
-    vector<vector<int>> result = identityMatrix(base.size());
-    while (exp > 0) 
+    Matrix result = identitymatrix(base.n);
+    while (exp > 0)
     {
-        if (exp & 1) result = matrixMultiply(result, base);
-        base = matrixMultiply(base, base);
+        if (exp & 1)
+        {
+            result = multiply(result, base);
+        }
+        base = multiply(base, base);
         exp >>= 1;
     }
     return result;
 }
-
-// --- SPARSE TABLE ---
-int st_n, max_log;
-vector<vector<int>> st_min, st_max;
-vector<int> log_table;
-void buildSparseTable(vector<int>& a) 
+struct SparseTable 
 {
-    st_n = a.size();
-    log_table.assign(st_n + 1, 0);
-    for (int i = 2; i <= st_n; i++) log_table[i] = log_table[i / 2] + 1;
-    max_log = log_table[st_n] + 1; 
-    st_min.assign(st_n, vector<int>(max_log));
-    st_max.assign(st_n, vector<int>(max_log));
-    for (int i = 0; i < st_n; i++) 
+    int n;
+    int max_log;
+    vector<vector<int>> st_min;
+    vector<vector<int>> st_max;
+    vector<int> log_table;
+    SparseTable(const vector<int>& a) 
     {
-        st_min[i][0] = a[i];
-        st_max[i][0] = a[i];
-    }
-    for (int j = 1; j < max_log; j++) 
-    {
-        for (int i = 0; i + (1 << j) <= st_n; i++) 
+        n = a.size();
+        log_table.assign(n + 1, 0);
+        for (int i = 2; i <= n; i++) 
         {
-            st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
-            st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
+            log_table[i] = log_table[i / 2] + 1;
+        }
+        max_log = log_table[n] + 1; 
+        st_min.assign(n, vector<int>(max_log));
+        st_max.assign(n, vector<int>(max_log));
+        for (int i = 0; i < n; i++) 
+        {
+            st_min[i][0] = a[i];
+            st_max[i][0] = a[i];
+        }
+        for (int j = 1; j < max_log; j++) 
+        {
+            for (int i = 0; i + (1 << j) <= n; i++) 
+            {
+                st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
+                st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
+            }
         }
     }
-}
-int query_min(int L, int R) 
-{
-    int j = log_table[R - L + 1];
-    return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
-}
-int query_max(int L, int R) 
-{
-    int j = log_table[R - L + 1];
-    return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
-}
+    int query_min(int L, int R) 
+    {
+        int j = log_table[R - L + 1];
+        return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
+    }
+    int query_max(int L, int R) 
+    {
+        int j = log_table[R - L + 1];
+        return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
+    }
+};
 // number of 1-bits in x
 // __builtin_popcountll(x);
 // // 1 if popcount is odd, 0 if even
@@ -426,14 +404,28 @@ int query_max(int L, int R)
 // x & ~(1LL << k);
 void solve()
 {
-    // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int x1, y1, x2, y2;
+    cin >> x1 >> y1 >> x2 >> y2;
+    int x3, y3, x4, y4;
+    cin >> x3 >> y3 >> x4 >> y4;
+    int x5, y5, x6, y6;
+    cin >> x5 >> y5 >> x6 >> y6;
+    int overlap1 = max(0LL, min(x2, x4) - max(x1, x3)) * max(0LL, min(y2, y4) - max(y1, y3));
+    int overlap2 = max(0LL, min(x2, x6) - max(x1, x5)) * max(0LL, min(y2, y6) - max(y1, y5));
+    int x2tmp = min(x6, x4);
+    int x1tmp = max(x5, x3);
+    int y2tmp = min(y6, y4);
+    int y1tmp = max(y5, y3);
+    int overlap3 = max(0LL, min(y2, y2tmp) - max(y1, y1tmp)) * max(0LL, min(x2, x2tmp) - max(x1, x1tmp));
+    int area = overlap1 + overlap2 - overlap3;
+    if (area >= (y2 - y1) * (x2 - x1)) cout << "NO" << endl;
+    else cout << "YES";
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
