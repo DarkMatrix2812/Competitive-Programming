@@ -198,12 +198,12 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
 void bfs(int s)
 {
     int n = adj.size();
+    d.assign(n, -1);
+    p.assign(n, -1);
+    vis.assign(n, false);
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -226,12 +226,12 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
+    color.assign(n, 0);
+    tin.assign(n, -1);
+    tout.assign(n, -1);
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -268,10 +268,10 @@ void recursive_dfs(int v)
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
+    dist.assign(n, LLONG_MAX);
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -290,36 +290,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -453,16 +424,77 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+
+int n, m;
+vector<pair<int,int>> change;
+vector<vector<int>> v;
+vector<vector<char>> grid;
+int dx[4] = {1, -1,0, 0};
+int dy[4] = {0, 0, 1, -1};
+void dfs(int x,int y)
+{
+    v[x][y] = 1;
+    for(int i = 0; i < 4; i ++)
+    {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+
+        if (nx < 1 || nx > n || ny < 1 || ny > m) continue;
+        if (v[nx][ny]) continue;
+        if (grid[nx][ny] =='#') continue;
+        dfs(nx, ny);
+    }
+    change.push_back({x, y});
+}
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int k;
+    cin >> n >> m >> k;
+    v.assign(n + 1, vector<int>(m + 1, 0));
+    grid.assign(n + 1, vector<char>(m + 1, '.'));
+    int start1 = 0; int start2 = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    int flag = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (grid[i][j] == '.')
+            {
+                start1 = i;
+                start2 = j;
+                flag = 1;
+                break;
+            }
+        }
+        if (flag) break;
+    }
+    dfs(start1, start2);
+    for (int i = 0; i < k; i ++)
+    {
+        grid[change[i].first][change[i].second] = 'X';
+    }
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            cout << grid[i][j];
+        }
+        cout << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

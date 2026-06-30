@@ -267,54 +267,52 @@ void recursive_dfs(int v)
     }
 }
 vector<vector<pair<int,int>>> adjd;
-vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
-void dijkstra(int s)
-{
-    int n = adjd.size();
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    dist[s] = 0;
-    pq.push({0, s});
-    while(!pq.empty())
-    {
-        auto [d, v] = pq.top();
-        pq.pop();
-        if(d != dist[v]) continue;
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[u] > d + w)
-            {
-                dist[u] = d + w;
-                pq.push({dist[u], u});
-            }
-        }
-    }
-}
+vector<vector<int>> distl;
+vector<vector<int>> distr;
+vector<vector<char>> grid;
 // dist.assign(n + 1, LLONG_MAX);
 // p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
+void bfs01(int sr, int sc, int n, int m)
 {
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
+    deque<pair<int, int>> q;
+    distl[sr][sc] = 0;
+    distr[sr][sc] = 0;
+    q.push_front({sr, sc});
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, -1, 1};
     while(!q.empty())
     {
-        int v = q.front();
+        auto [i, j] = q.front();
         q.pop_front();
-        for(auto [u, w] : adjd[v])
+        for(int k = 0; k < 4; k ++)
         {
-            if(dist[v] + w < dist[u])
+            if (i + dr[k] < 1 || i + dr[k] > n || j + dc[k] > m || j + dc[k] < 1) continue;
+            if (grid[i + dr[k]][j + dc[k]] == '*') continue;
+            if (dc[k] == -1)
             {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
+                if (distl[i][j] + 1 < distl[i + dr[k]][j + dc[k]])
                 {
-                    q.push_back(u);
+                    distl[i + dr[k]][j + dc[k]] = distl[i][j] + 1;
+                    distr[i + dr[k]][j + dc[k]] = distr[i][j];
+                    q.push_back({i + dr[k], j + dc[k]});
                 }
-                else
+            } 
+            else if (dc[k] == 1)
+            {
+                if (distr[i][j] + 1 < distr[i + dr[k]][j + dc[k]])
                 {
-                    q.push_front(u);
+                    distr[i + dr[k]][j + dc[k]] = distr[i][j] + 1;
+                    distl[i + dr[k]][j + dc[k]] = distl[i][j];
+                    q.push_back({i + dr[k], j + dc[k]});
+                }
+            }
+            else
+            {
+                if (distr[i][j] < distr[i + dr[k]][j + dc[k]])
+                {
+                    distr[i + dr[k]][j + dc[k]] = distr[i][j];
+                    distl[i + dr[k]][j + dc[k]] = distl[i][j];
+                    q.push_front({i + dr[k], j + dc[k]});
                 }
             }
         }
@@ -456,13 +454,38 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    grid.assign(n + 1, vector<char>(m + 1, '.'));
+    distl.assign(n + 1, vector<int>(m + 1, LLONG_MAX));
+    distr.assign(n + 1, vector<int>(m + 1, LLONG_MAX));
+    int r, c;
+    cin >> r >> c;
+    int x, y;
+    cin >> x >> y;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    bfs01(r, c, n, m);
+    int ans = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (distl[i][j] <= x && distr[i][j] <= y) ans += 1;
+        }
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

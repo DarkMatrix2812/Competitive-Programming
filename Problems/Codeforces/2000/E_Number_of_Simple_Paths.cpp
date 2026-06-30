@@ -290,36 +290,41 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
+vector<int> cycle;
+int start = -1;
+int stop = -1;
+bool find_cycle(int v, int par) 
 {
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
+    vis[v] = true;
+    p[v] = par;
+    for (int u : adj[v]) 
     {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
+        if (u == par) continue; 
+        if (vis[u]) 
         {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
+            stop = v;
+            start = u;
+            return true;
+        }
+        if (find_cycle(u, v)) 
+        {
+            return true;
         }
     }
+    return false;
 }
+int subtree_size(int v, int par) 
+{
+    int size = 1;
+    for (int u : adj[v]) 
+    {
+        if (u == par) continue; 
+        if (vis[u]) continue;   
+        size += subtree_size(u, v);
+    }
+    return size;
+}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,6 +461,39 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    adj.assign(n + 1, {});
+    for (int i = 1; i <= n; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    int ans = n * (n - 1);
+    vis.assign(n + 1, false);
+    p.assign(n + 1, -1);
+    cycle.clear();
+    find_cycle(1, -1);
+    int curr = stop;
+    while (curr != start) 
+    {
+        cycle.push_back(curr);
+        curr = p[curr];
+    }
+    cycle.push_back(curr);
+    vis.assign(n + 1, false);
+    for (int node : cycle)
+    {
+        vis[node] = true;
+    }
+    p.assign(n + 1, -1);
+    for (int node : cycle)
+    {
+        ans -= (subtree_size(node, p[node]) * (subtree_size(node, p[node]) - 1)) / 2;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

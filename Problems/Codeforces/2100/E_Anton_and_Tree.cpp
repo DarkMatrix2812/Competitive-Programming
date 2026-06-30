@@ -198,12 +198,40 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
+vector<int> color;
+vector<int> comp;
+int cnt;
 void bfs(int s)
 {
     int n = adj.size();
+    queue<int> q;
+    q.push(s);
+    vis[s] = true;
+    d[s] = 0;
+    comp[s] = cnt;
+    while(!q.empty())
+    {
+        int v = q.front();
+        q.pop();
+        for(int u : adj[v])
+        {
+            if (!vis[u] && color[u] == color[v])
+            {
+                vis[u] = true;
+                d[u] = d[v] + 1;
+                p[u] = v;
+                comp[u] = cnt;
+                q.push(u);
+            }
+        }
+    }
+}
+vector<vector<int>> compadj;
+void bfs2(int s)
+{
+    int n = compadj.size();
+    d.assign(n, -1);
+    p.assign(n, -1);
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -212,7 +240,7 @@ void bfs(int s)
     {
         int v = q.front();
         q.pop();
-        for(int u : adj[v])
+        for(int u : compadj[v])
         {
             if (!vis[u])
             {
@@ -224,54 +252,54 @@ void bfs(int s)
         }
     }
 }
-vector<int> color, tin, tout;
-int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
-void iterative_dfs(int root)
-{
-    int n = adj.size();
-    timer = 0;
-    stack<pair<int,int>> st;
-    st.push({root, 0}); // 0 = enter, 1 = exit
-    while (!st.empty())
-    {
-        auto [v, state] = st.top();
-        st.pop();
-        if (state == 0)
-        {
-            tin[v] = timer++;
-            color[v] = 1;
-            st.push({v, 1});
-            for (int i = (int)adj[v].size() - 1; i >= 0; i--)
-            {
-                int u = adj[v][i];
-                if (color[u] == 0) st.push({u, 0});
-            }
-        }
-        else
-        {
-            color[v] = 2;
-            tout[v] = timer++;
-        }
-    }
-}
-void recursive_dfs(int v)
-{
-    vis[v] = 1;
-    for (int u : adj[v])
-    {
-        if (vis[u]) continue;
-        recursive_dfs(u);
-    }
-}
+// vector<int> color, tin, tout;
+// int timer;
+// void iterative_dfs(int root)
+// {
+//     int n = adj.size();
+//     color.assign(n, 0);
+//     tin.assign(n, -1);
+//     tout.assign(n, -1);
+//     timer = 0;
+//     stack<pair<int,int>> st;
+//     st.push({root, 0}); // 0 = enter, 1 = exit
+//     while (!st.empty())
+//     {
+//         auto [v, state] = st.top();
+//         st.pop();
+//         if (state == 0)
+//         {
+//             tin[v] = timer++;
+//             color[v] = 1;
+//             st.push({v, 1});
+//             for (int i = (int)adj[v].size() - 1; i >= 0; i--)
+//             {
+//                 int u = adj[v][i];
+//                 if (color[u] == 0) st.push({u, 0});
+//             }
+//         }
+//         else
+//         {
+//             color[v] = 2;
+//             tout[v] = timer++;
+//         }
+//     }
+// }
+// void recursive_dfs(int v)
+// {
+//     vis[v] = 1;
+//     for (int u : adj[v])
+//     {
+//         if (vis[u]) continue;
+//         recursive_dfs(u);
+//     }
+// }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
+    dist.assign(n, LLONG_MAX);
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -290,36 +318,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,13 +455,72 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    d.assign(n + 1, -1);
+    p.assign(n + 1, -1);
+    color.assign(n + 1, 0);
+    vis.assign(n + 1, false);
+    adj.assign(n + 1, {});
+    comp.assign(n + 1, -1);
+    cnt = 1;
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> color[i];
+    }
+    for (int i = 1; i <= n - 1; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        if (!vis[i])
+        {
+            bfs(i);
+            cnt += 1;
+        }
+    }
+    compadj.assign(cnt + 1, {});
+    for (int v = 1; v <= n; v ++)
+    {
+        for (int u : adj[v])
+        {
+            if (comp[v] != comp[u])
+            {
+                compadj[comp[v]].push_back(comp[u]);
+            }
+        }
+    }
+    // now to find diameter of compadj
+    vis.assign(cnt + 1, false);
+    bfs2(1);
+    int mx = 0;
+    int end = 1;
+    for (int node = 2; node <= cnt; node ++)
+    {
+        if (d[node] > mx)
+        {
+            mx = d[node];
+            end = node;
+        }
+    }
+    vis.assign(cnt + 1, false);
+    bfs2(end);
+    int diameter = 0;
+    for (int node = 1; node <= cnt; node ++)
+    {
+        diameter = max(diameter, d[node]);
+    }
+    cout << (diameter + 1) / 2;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

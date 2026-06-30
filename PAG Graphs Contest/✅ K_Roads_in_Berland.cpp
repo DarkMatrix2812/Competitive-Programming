@@ -198,12 +198,12 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
 void bfs(int s)
 {
     int n = adj.size();
+    d.assign(n, -1);
+    p.assign(n, -1);
+    vis.assign(n, false);
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -226,12 +226,12 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
+    color.assign(n, 0);
+    tin.assign(n, -1);
+    tout.assign(n, -1);
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -268,10 +268,10 @@ void recursive_dfs(int v)
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
+    dist.assign(n, LLONG_MAX);
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -290,36 +290,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,13 +427,47 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<vector<int>> d(n + 1, vector<int>(n + 1, 0));
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= n; j ++)
+        {
+            cin >> d[i][j];
+        }
+    }
+    int k;
+    cin >> k;
+    for (int i = 1; i <= k; i ++)
+    {
+        int a, b, c;
+        cin >> a >> b >> c;
+        // n^2 update
+        for (int i = 1; i <= n; i ++)
+        {
+            for (int j = 1; j <= n; j ++)
+            {
+                d[i][j] = min(d[i][j], d[i][a] + c + d[b][j]);
+                d[i][j] = min(d[i][j], d[i][b] + c + d[a][j]);
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i ++)
+        {
+            for (int j = 1; j <= n; j ++)
+            {
+                if (i < j) ans += d[i][j];
+            }
+        }
+        cout << ans << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -292,7 +292,7 @@ void dijkstra(int s)
 }
 // dist.assign(n + 1, LLONG_MAX);
 // p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
+void bfs01(int s)
 {
     int n = adjd.size();
     deque<int> q;
@@ -456,13 +456,35 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    // genius, what if we consider rows and columns both as nodes?
+    // we just need to reach row 0 from row n - 1
+    adj.assign(n + m, {});
+    d.assign(n + m, -1);
+    p.assign(n + m, -1);
+    vis.assign(n + m, false);
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < m; j ++)
+        {
+            char c;
+            cin >> c;
+            if (c == '#')
+            {
+                adj[i].push_back(n + j);
+                adj[n + j].push_back(i);
+            }
+        }
+    }
+    bfs(n - 1);
+    cout << d[0];
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

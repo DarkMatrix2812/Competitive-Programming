@@ -290,36 +290,48 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
+
+vector<int> side;
+// side.assign(n + 1, -1);
+bool is_bipartite = true;
+void bipartite()
 {
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
+    int n = adj.size() - 1;
+    queue<int> q;
+    int ans = 1;
+    for (int st = 1; st <= n; st ++) 
     {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
+        if (side[st] == -1) 
         {
-            if(dist[v] + w < dist[u])
+            int c1 = 1; int c2 = 0;
+            q.push(st);
+            side[st] = 0;
+            while (!q.empty()) 
             {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
+                int v = q.front();
+                q.pop();
+                for (int u : adj[v]) 
                 {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
+                    if (side[u] == -1) 
+                    {
+                        side[u] = side[v] ^ 1;
+                        if (side[u] == 0) c1 += 1;
+                        else c2 += 1;
+                        q.push(u);
+                    } 
+                    else if (side[u] == side[v])
+                    {
+                        cout << 0 << endl;
+                        return;
+                    }
                 }
             }
+            ans = ans * ((binExp(2, c1, MOD2) + binExp(2, c2, MOD2)) % MOD2) % MOD2;
         }
     }
+    cout << ans << endl;
 }
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,6 +468,18 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    adj.assign(n + 1, {});
+    side.assign(n + 1, -1);
+    for (int i = 0; i < m; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    bipartite();
 }
 int32_t main() 
 {

@@ -198,12 +198,12 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
 void bfs(int s)
 {
     int n = adj.size();
+    d.assign(n, -1);
+    p.assign(n, -1);
+    vis.assign(n, false);
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -226,12 +226,12 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
+    color.assign(n, 0);
+    tin.assign(n, -1);
+    tout.assign(n, -1);
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -260,18 +260,20 @@ void iterative_dfs(int root)
 void recursive_dfs(int v)
 {
     vis[v] = 1;
+    cout << char(v + 'a');
     for (int u : adj[v])
     {
         if (vis[u]) continue;
         recursive_dfs(u);
+        cout << char(v + 'a');
     }
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
+    dist.assign(n, LLONG_MAX);
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -290,36 +292,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -453,16 +426,65 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+
+vector<int> findRoots(vector<vector<int>>& adjList, int n, vector<bool> &used)
+{
+    vector<int> inDegree(n + 1, 0);
+    for (vector<int> &list : adjList)
+    {
+        for (int element : list)
+        {
+            inDegree[element]++;
+        }
+    }
+    vector<int> ans;
+    for (int k = 0; k < n; k++)
+    {
+        if (used[k] && inDegree[k] == 0) ans.push_back(k);
+    }
+    return ans;
+}
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    adj.assign(26, {});
+    vis.assign(26, false);
+    vector<bool> used(26, false);
+    for (int i = 0; i < n; i ++)
+    {
+        string s;
+        cin >> s;
+        for (char c : s)
+        {
+            used[c - 'a'] = true;
+        }
+        for (int i = 0; i < s.length() - 1; i ++)
+        {
+            int u = s[i] - 'a';
+            int v = s[i + 1] - 'a';
+            if (find(adj[u].begin(), adj[u].end(), v) == adj[u].end()) adj[u].push_back(v);
+        }
+    }
+    vector<int> r = findRoots(adj, 26, used);
+    for (int root : r)
+    {
+        int curr = root;
+        while (true)
+        {
+            cout << char(curr + 'a');
+            vis[curr] = true;
+            if (adj[curr].empty()) break;
+            curr = adj[curr][0];
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

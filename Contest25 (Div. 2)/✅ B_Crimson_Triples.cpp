@@ -198,9 +198,9 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
+// d.assign(n, -1);
+// p.assign(n, -1);
+// vis.assign(n, false);
 void bfs(int s)
 {
     int n = adj.size();
@@ -226,9 +226,9 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
+// color.assign(n, 0);
+// tin.assign(n, -1);
+// tout.assign(n, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
@@ -268,7 +268,7 @@ void recursive_dfs(int v)
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
+// dist.assign(n, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
@@ -290,36 +290,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,6 +427,15 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    // lcm(a, b) = a & lcm(b, c) = c?
+    int ans = 0;
+    for (int b = 1; b <= n; b ++)
+    {
+        ans += ((n / b) * (n / b));
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

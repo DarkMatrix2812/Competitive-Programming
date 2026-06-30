@@ -198,12 +198,12 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
 void bfs(int s)
 {
     int n = adj.size();
+    d.assign(n, -1);
+    p.assign(n, -1);
+    vis.assign(n, false);
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -226,12 +226,12 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
+    color.assign(n, 0);
+    tin.assign(n, -1);
+    tout.assign(n, -1);
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -268,10 +268,10 @@ void recursive_dfs(int v)
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
+    dist.assign(n, LLONG_MAX);
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -290,36 +290,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -453,9 +424,46 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+
+int f(int x, vector<int> &a) // no. of subarrays with mex >= x
+{
+    int n = a.size();
+    if (x == 0) return n * (n + 1) / 2;
+    int ans = 0;
+    int distinct = 0;
+    unordered_map<int, int> freq;
+    int l = 0;
+    for (int r = 0; r < n; r ++)
+    {
+        if (a[r] < x)
+        {
+            if (freq[a[r]] == 0) distinct += 1;
+            freq[a[r]] += 1;
+        }
+        while (distinct == x)
+        {
+            if (a[l] < x)
+            {
+                freq[a[l]] -= 1;
+                if (freq[a[l]] == 0) distinct -= 1;
+            }
+            l += 1;
+        }
+        ans += l;
+    }
+    return ans;
+}
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    cout << f(k, a) - f(k + 1, a) << endl;
 }
 int32_t main() 
 {

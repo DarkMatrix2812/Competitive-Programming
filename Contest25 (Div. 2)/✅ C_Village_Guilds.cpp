@@ -198,20 +198,22 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
-// d.assign(n + 1, -1);
-// p.assign(n + 1, -1);
-// vis.assign(n + 1, false);
+// d.assign(n, -1);
+// p.assign(n, -1);
+// vis.assign(n, false);
+vector<int> order;
 void bfs(int s)
 {
     int n = adj.size();
     queue<int> q;
     q.push(s);
     vis[s] = true;
-    d[s] = 0;
+    d[s] = 1;
     while(!q.empty())
     {
         int v = q.front();
         q.pop();
+        order.push_back(v);
         for(int u : adj[v])
         {
             if (!vis[u])
@@ -226,9 +228,9 @@ void bfs(int s)
 }
 vector<int> color, tin, tout;
 int timer;
-// color.assign(n + 1, 0);
-// tin.assign(n + 1, -1);
-// tout.assign(n + 1, -1);
+// color.assign(n, 0);
+// tin.assign(n, -1);
+// tout.assign(n, -1);
 void iterative_dfs(int root)
 {
     int n = adj.size();
@@ -268,7 +270,7 @@ void recursive_dfs(int v)
 }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
+// dist.assign(n, LLONG_MAX);
 void dijkstra(int s)
 {
     int n = adjd.size();
@@ -290,36 +292,7 @@ void dijkstra(int s)
         }
     }
 }
-// dist.assign(n + 1, LLONG_MAX);
-// p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
-{
-    int n = adjd.size();
-    deque<int> q;
-    dist[s] = 0;
-    q.push_front(s);
-    while(!q.empty())
-    {
-        int v = q.front();
-        q.pop_front();
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[v] + w < dist[u])
-            {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
-                {
-                    q.push_back(u);
-                }
-                else
-                {
-                    q.push_front(u);
-                }
-            }
-        }
-    }
-}
+
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -456,6 +429,42 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    order.clear();
+    int n;
+    cin >> n;
+    vector<int> par(n + 1);
+    adj.assign(n + 1, {});
+    for (int i = 2; i < n + 1; i ++)
+    {
+        cin >> par[i];
+        adj[par[i]].push_back(i);
+        adj[i].push_back(par[i]);
+    }
+    d.assign(n + 1, -1);
+    p.assign(n + 1, -1);
+    vis.assign(n + 1, false);
+    int ans = n;
+    bfs(1);
+    vector<int> first = d;
+    vector<int> second = d;
+    for (int i = n - 1; i >= 0; i --)
+    {
+        int node = order[i];
+        if (p[node] != -1)
+        {
+            if (first[node] > first[p[node]])
+            {
+                second[p[node]] = first[p[node]];
+                first[p[node]] = first[node];
+            }
+            else if (first[node] > second[p[node]]) second[p[node]] = first[node];
+        }
+    }
+    for (int node = 1; node <= n; node ++)
+    {
+        ans += max(0LL, second[node] - d[node]);
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
