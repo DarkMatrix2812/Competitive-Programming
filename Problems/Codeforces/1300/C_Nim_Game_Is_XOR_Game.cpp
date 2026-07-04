@@ -316,41 +316,6 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
 
 // --- DSU ---
 vector<int> parent;
@@ -490,6 +455,31 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    int x = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        x ^= a[i];
+    }
+    if (n == 1)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    if (x == 0) // b = a
+    {
+        cout << 1 << endl;
+        return;
+    }
+    int ans = 0;
+    for (int i = 0; i < n; i ++)
+    {
+        if ((a[i] ^ x) < a[i]) ans += 1;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

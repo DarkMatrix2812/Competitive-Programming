@@ -490,13 +490,51 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    adjbf.assign(n + 1, {});
+    adj.assign(n + 1, {});
+    vector<vector<int>> radj;
+    radj.assign(n + 1, {});
+    bellman_dist.assign(n + 1, LLONG_MAX);
+    for (int i = 1; i <= m; i ++)
+    {
+        int a, b, x;
+        cin >> a >> b >> x;
+        adjbf[a].push_back({b, -x});
+        adj[a].push_back(b);
+        radj[b].push_back(a);
+    }
+    bellmanFord(n, 1);
+    vis.assign(n + 1, false);
+    recursive_dfs(1);
+    vector<bool> from1 = vis;
+    adj = radj;
+    vis.assign(n + 1, false);
+    recursive_dfs(n);
+    vector<bool> ton = vis;
+    for (int u = 1; u <= n; u++)
+    {
+        if (bellman_dist[u] == LLONG_MAX) continue;
+        for (auto [v, w] : adjbf[u])
+        {
+            if (bellman_dist[v] > bellman_dist[u] + w)
+            {
+                if (from1[u] && ton[v])
+                {
+                    cout << -1;
+                    return;
+                }
+            }
+        }
+    }
+    cout << -bellman_dist[n];
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

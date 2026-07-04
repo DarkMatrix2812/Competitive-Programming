@@ -198,19 +198,22 @@ int lcm(int a, int b)
 vector<vector<int>> adj;
 vector<int> d, p;
 vector<bool> vis;
+vector<int> order;
 // d.assign(n + 1, -1);
 // p.assign(n + 1, -1);
 // vis.assign(n + 1, false);
 void bfs(int s)
 {
-    queue<int> q;
-    q.push(s);
+    int n = adj.size();
+    priority_queue<int, vector<int>, greater<int>> q;
     vis[s] = true;
+    q.push(s);
     d[s] = 0;
     while(!q.empty())
     {
-        int v = q.front();
+        int v = q.top();
         q.pop();
+        order.push_back(v);
         for(int u : adj[v])
         {
             if (!vis[u])
@@ -230,6 +233,7 @@ int timer;
 // tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
+    int n = adj.size();
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -269,6 +273,7 @@ vector<int> dist;
 // dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
+    int n = adjd.size();
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -291,6 +296,7 @@ void dijkstra(int s)
 // p.assign(n + 1, -1);
 void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
 {
+    int n = adjd.size();
     deque<int> q;
     dist[s] = 0;
     q.push_front(s);
@@ -316,42 +322,6 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
-
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -490,13 +460,30 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, m;
+    cin >> n >> m;
+    adj.assign(n + 1, {});
+    d.assign(n + 1, -1);
+    p.assign(n + 1, -1);
+    vis.assign(n + 1, false);
+    for (int i = 1; i <= m; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    bfs(1);
+    for (int x : order)
+    {
+        cout << x << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -264,18 +264,6 @@ Matrix matrixExp(Matrix base, int exp)
     }
     return result;
 }
-/*Time limit per test: 2.0 seconds
-Memory limit per test: 256 megabytes
-You are given an array A of n integers.
-For any contiguous subarray A[l, r], we define its multiplicative value P[l, r] as the product of all elements in the subarray, modulo 10^9 + 7
-P[l, r] = product(A_i) mod (10^9 + 7)
-You construct a new array b of length n(n + 1)/2 by writing down the multiplicative values of all contiguous subarrays of A. 
-You process the subarrays primarily in increasing order of their left endpoint L, and secondarily in increasing order of their right endpoint R.
-For example, if n = 3, the array B is formed by appending the values: P(1, 1), P(1, 2), P(1, 3), P(2, 2), P(2, 3), P(3, 3). You are given Q queries. 
-Each query consists of two integers x and y. For each query, you need to find the sum of elements B_x + B_(x + 1) + ... + B_y, modulo 10^9 + 7.
-Expected time complexity: O(nlogM + q(logn + logM))*/
-
-// SOLUTION
 void solve()
 {
     int n;

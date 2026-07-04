@@ -316,41 +316,6 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
 
 // --- DSU ---
 vector<int> parent;
@@ -431,7 +396,7 @@ vector<vector<int>> matrixExp(vector<vector<int>> base, int exp)
 
 // --- SPARSE TABLE ---
 int st_n, max_log;
-vector<vector<int>> st_min, st_max;
+vector<vector<int>> st_gcd;
 vector<int> log_table;
 void buildSparseTable(vector<int>& a) 
 {
@@ -439,31 +404,23 @@ void buildSparseTable(vector<int>& a)
     log_table.assign(st_n + 1, 0);
     for (int i = 2; i <= st_n; i++) log_table[i] = log_table[i / 2] + 1;
     max_log = log_table[st_n] + 1; 
-    st_min.assign(st_n, vector<int>(max_log));
-    st_max.assign(st_n, vector<int>(max_log));
+    st_gcd.assign(st_n, vector<int>(max_log));
     for (int i = 0; i < st_n; i++) 
     {
-        st_min[i][0] = a[i];
-        st_max[i][0] = a[i];
+        st_gcd[i][0] = a[i];
     }
     for (int j = 1; j < max_log; j++) 
     {
         for (int i = 0; i + (1 << j) <= st_n; i++) 
         {
-            st_min[i][j] = min(st_min[i][j - 1], st_min[i + (1 << (j - 1))][j - 1]);
-            st_max[i][j] = max(st_max[i][j - 1], st_max[i + (1 << (j - 1))][j - 1]);
+            st_gcd[i][j] = gcd(st_gcd[i][j - 1], st_gcd[i + (1 << (j - 1))][j - 1]);
         }
     }
 }
-int query_min(int L, int R) 
+int query_gcd(int L, int R) 
 {
     int j = log_table[R - L + 1];
-    return min(st_min[L][j], st_min[R - (1 << j) + 1][j]);
-}
-int query_max(int L, int R) 
-{
-    int j = log_table[R - L + 1];
-    return max(st_max[L][j], st_max[R - (1 << j) + 1][j]);
+    return gcd(st_gcd[L][j], st_gcd[R - (1 << j) + 1][j]);
 }
 // number of 1-bits in x
 // __builtin_popcountll(x);
@@ -490,6 +447,31 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> diff;
+    for (int i = 1; i < n; i ++)
+    {
+        diff.push_back(abs(a[i] - a[i - 1]));
+    }
+    // at first glance seems to be gcd of difference array => sparse table?
+    buildSparseTable(diff);
+    for (int i = 0; i < q; i ++)
+    {
+        int l, r;
+        cin >> l >> r;
+        if (l == r) cout << 0 << " ";
+        else
+        {
+            cout << query_gcd(l - 1, r - 2) << " ";
+        }
+    }
+    cout << endl;
 }
 int32_t main() 
 {

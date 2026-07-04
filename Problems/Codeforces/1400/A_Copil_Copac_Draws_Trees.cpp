@@ -195,14 +195,16 @@ int lcm(int a, int b)
 }
 
 // --- GRAPHS ---
-vector<vector<int>> adj;
+vector<vector<pair<int, int>>> adj;
 vector<int> d, p;
 vector<bool> vis;
+vector<int> ans;
 // d.assign(n + 1, -1);
 // p.assign(n + 1, -1);
 // vis.assign(n + 1, false);
 void bfs(int s)
 {
+    int n = adj.size();
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -211,64 +213,68 @@ void bfs(int s)
     {
         int v = q.front();
         q.pop();
-        for(int u : adj[v])
+        for(auto [u, id] : adj[v])
         {
             if (!vis[u])
             {
                 vis[u] = true;
+                if (id > p[v]) ans[u] = ans[v];
+                else ans[u] = ans[v] + 1;
                 d[u] = d[v] + 1;
-                p[u] = v;
+                p[u] = id;
                 q.push(u);
             }
         }
     }
 }
-vector<int> color, tin, tout;
-int timer;
+// vector<int> color, tin, tout;
+// int timer;
 // color.assign(n + 1, 0);
 // tin.assign(n + 1, -1);
 // tout.assign(n + 1, -1);
-void iterative_dfs(int root)
-{
-    timer = 0;
-    stack<pair<int,int>> st;
-    st.push({root, 0}); // 0 = enter, 1 = exit
-    while (!st.empty())
-    {
-        auto [v, state] = st.top();
-        st.pop();
-        if (state == 0)
-        {
-            tin[v] = timer++;
-            color[v] = 1;
-            st.push({v, 1});
-            for (int i = (int)adj[v].size() - 1; i >= 0; i--)
-            {
-                int u = adj[v][i];
-                if (color[u] == 0) st.push({u, 0});
-            }
-        }
-        else
-        {
-            color[v] = 2;
-            tout[v] = timer++;
-        }
-    }
-}
-void recursive_dfs(int v)
-{
-    vis[v] = 1;
-    for (int u : adj[v])
-    {
-        if (vis[u]) continue;
-        recursive_dfs(u);
-    }
-}
+// void iterative_dfs(int root)
+// {
+//     int n = adj.size();
+//     timer = 0;
+//     stack<pair<int,int>> st;
+//     st.push({root, 0}); // 0 = enter, 1 = exit
+//     while (!st.empty())
+//     {
+//         auto [v, state] = st.top();
+//         st.pop();
+//         if (state == 0)
+//         {
+//             tin[v] = timer++;
+//             color[v] = 1;
+//             st.push({v, 1});
+//             for (int i = (int)adj[v].size() - 1; i >= 0; i--)
+//             {
+//                 int u = adj[v][i];
+//                 if (color[u] == 0) st.push({u, 0});
+//             }
+//         }
+//         else
+//         {
+//             color[v] = 2;
+//             tout[v] = timer++;
+//         }
+//     }
+// }
+// void recursive_dfs(int v)
+// {
+//     vis[v] = 1;
+//     for (int u : adj[v])
+//     {
+//         if (vis[u]) continue;
+//         recursive_dfs(u);
+//     }
+// }
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
 // dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
+    int n = adjd.size();
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -291,6 +297,7 @@ void dijkstra(int s)
 // p.assign(n + 1, -1);
 void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
 {
+    int n = adjd.size();
     deque<int> q;
     dist[s] = 0;
     q.push_front(s);
@@ -316,42 +323,6 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
-
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -490,6 +461,23 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    adj.assign(n + 1, {});
+    d.assign(n + 1, -1);
+    p.assign(n + 1, -1);
+    vis.assign(n + 1, false);
+    ans.assign(n + 1, 0);
+    ans[1] = 1;
+    for (int i = 1; i <= n - 1; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back({v, i});
+        adj[v].push_back({u, i});
+    }
+    bfs(1);
+    cout << *max_element(ans.begin(), ans.end()) << endl;
 }
 int32_t main() 
 {

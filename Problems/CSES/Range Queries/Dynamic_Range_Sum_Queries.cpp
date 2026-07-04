@@ -203,6 +203,7 @@ vector<bool> vis;
 // vis.assign(n + 1, false);
 void bfs(int s)
 {
+    int n = adj.size();
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -230,6 +231,7 @@ int timer;
 // tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
+    int n = adj.size();
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -269,6 +271,7 @@ vector<int> dist;
 // dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
+    int n = adjd.size();
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -291,6 +294,7 @@ void dijkstra(int s)
 // p.assign(n + 1, -1);
 void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
 {
+    int n = adjd.size();
     deque<int> q;
     dist[s] = 0;
     q.push_front(s);
@@ -316,42 +320,6 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
-
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -490,13 +458,40 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n + 1, 0);
+    bit_n = n;
+    bit_arr.assign(bit_n + 1, 0);
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> a[i];
+        fenwick_update(i, a[i]);
+    }
+    for (int i = 0; i < q; i ++)
+    {
+        int x;
+        cin >> x;
+        if (x == 1)
+        {
+            int k, u;
+            cin >> k >> u;
+            fenwick_update(k, u - a[k]);
+            a[k] = u;
+        }
+        else
+        {
+            int a, b;
+            cin >> a >> b;
+            cout << fenwick_query(b) - fenwick_query(a - 1) << endl;
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -316,41 +316,19 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
+vector<int> subtree_size;
+void subtreesize(int v, int par, vector<vector<int>> &adj, vector<int> &subtree_size)
 {
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
+    subtree_size[v] = 0;
+    for (int u : adj[v])
     {
-        for(int u = 1; u <= n; u++)
+        if (u != par)
         {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
+            subtreesize(u, v, adj, subtree_size);
+            subtree_size[v] += (subtree_size[u] + 1);
         }
     }
 }
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
 
 // --- DSU ---
 vector<int> parent;
@@ -490,13 +468,30 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    adj.assign(n + 1, {});
+    subtree_size.assign(n + 1, 0);
+    p.assign(n + 1, 0);
+    for (int i = 2; i <= n; i ++)
+    {
+        int u;
+        cin >> u;
+        adj[i].push_back(u);
+        adj[u].push_back(i);
+        p[i] = u;
+    }
+    subtreesize(1, 0, adj, subtree_size);
+    for (int node = 1; node <= n; node ++)
+    {
+        cout << subtree_size[node] << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

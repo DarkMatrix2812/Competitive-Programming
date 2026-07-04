@@ -203,6 +203,7 @@ vector<bool> vis;
 // vis.assign(n + 1, false);
 void bfs(int s)
 {
+    int n = adj.size();
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -230,6 +231,7 @@ int timer;
 // tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
+    int n = adj.size();
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -269,6 +271,7 @@ vector<int> dist;
 // dist.assign(n + 1, LLONG_MAX);
 void dijkstra(int s)
 {
+    int n = adjd.size();
     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
     dist[s] = 0;
     pq.push({0, s});
@@ -291,6 +294,7 @@ void dijkstra(int s)
 // p.assign(n + 1, -1);
 void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
 {
+    int n = adjd.size();
     deque<int> q;
     dist[s] = 0;
     q.push_front(s);
@@ -316,42 +320,20 @@ void bfs01(int s) // basically dijkstra but optimized because we have weights on
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
+vector<pair<int,int>> cycles;
+void dfs(int v, int par)
 {
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
+    vis[v] = true;
+    for (int u : adj[v])
     {
-        for(int u = 1; u <= n; u++)
+        if (u == par) continue;
+        if (!vis[u]) dfs(u, v);
+        else if (v < u)
         {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
+            cycles.push_back({v, u});
         }
     }
 }
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
-
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -490,13 +472,53 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    // there will be exactly islands - 1 cycles => and also islands - 1 edges to connect islands
+    // find cycles, remove one edge from each cycle
+    // find heads of islands and connect them
+    // both set sizes will be same, easy output
+    int n;
+    cin >> n;
+    adj.assign(n + 1, {});
+    d.assign(n + 1, -1);
+    p.assign(n + 1, -1);
+    vis.assign(n + 1, false);
+    for (int i = 1; i <= n - 1; i ++)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    vector<int> islands;
+    for (int i = 1; i <= n; i ++)
+    {
+        if (!vis[i])
+        {
+            islands.push_back(i);
+            bfs(i);
+        }
+    }
+    vector<pair<int, int>> build;
+    for (int i = 0; i < islands.size() - 1; i ++)
+    {
+        build.push_back({islands[i], islands[i + 1]});
+    }
+    vis.assign(n + 1, false);
+    for (int x : islands)
+    {
+        dfs(x, -1);
+    }
+    cout << build.size() << endl;
+    for (int i = 0; i < build.size(); i ++)
+    {
+        cout << cycles[i].first << " " << cycles[i].second << " " << build[i].first << " " << build[i].second << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

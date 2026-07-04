@@ -203,6 +203,7 @@ vector<bool> vis;
 // vis.assign(n + 1, false);
 void bfs(int s)
 {
+    int n = adj.size();
     queue<int> q;
     q.push(s);
     vis[s] = true;
@@ -230,6 +231,7 @@ int timer;
 // tout.assign(n + 1, -1);
 void iterative_dfs(int root)
 {
+    int n = adj.size();
     timer = 0;
     stack<pair<int,int>> st;
     st.push({root, 0}); // 0 = enter, 1 = exit
@@ -265,93 +267,81 @@ void recursive_dfs(int v)
     }
 }
 vector<vector<pair<int,int>>> adjd;
-vector<int> dist;
-// dist.assign(n + 1, LLONG_MAX);
-void dijkstra(int s)
+struct hash_pair
 {
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    dist[s] = 0;
-    pq.push({0, s});
-    while(!pq.empty())
+    size_t operator()(const pair<int,int>& p) const
     {
-        auto [d, v] = pq.top();
-        pq.pop();
-        if(d != dist[v]) continue;
-        for(auto [u, w] : adjd[v])
-        {
-            if(dist[u] > d + w)
-            {
-                dist[u] = d + w;
-                pq.push({dist[u], u});
-            }
-        }
+        return p.first * 1000003LL + p.second;
     }
-}
+};
+unordered_map<pair<int,int>, int, hash_pair> dist;
+// dist.assign(n + 1, LLONG_MAX);
+// void dijkstra(int s)
+// {
+//     int n = adjd.size();
+//     priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+//     dist[s] = 0;
+//     pq.push({0, s});
+//     while(!pq.empty())
+//     {
+//         auto [d, v] = pq.top();
+//         pq.pop();
+//         if(d != dist[v]) continue;
+//         for(auto [u, w] : adjd[v])
+//         {
+//             if(dist[u] > d + w)
+//             {
+//                 dist[u] = d + w;
+//                 pq.push({dist[u], u});
+//             }
+//         }
+//     }
+// }
 // dist.assign(n + 1, LLONG_MAX);
 // p.assign(n + 1, -1);
-void bfs01(int s) // basically dijkstra but optimized because we have weights only as 0-1
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+void bfs01(pair<int, int> s, int H, int W, vector<vector<char>> grid) // basically dijkstra but optimized because we have weights only as 0-1
 {
-    deque<int> q;
+    int n = adjd.size();
+    deque<pair<int, int>> q;
     dist[s] = 0;
     q.push_front(s);
     while(!q.empty())
     {
-        int v = q.front();
+        auto [x, y] = q.front();
         q.pop_front();
-        for(auto [u, w] : adjd[v])
+        for (int i = 0; i < 4; i ++)
         {
-            if(dist[v] + w < dist[u])
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (nx >= 0 && nx < H && ny >= 0 && ny < W && grid[nx][ny] != '#')
             {
-                dist[u] = dist[v] + w;
-                p[u] = v;
-                if(w == 1)
+                if (dist[{nx, ny}] > dist[{x, y}]) 
                 {
-                    q.push_back(u);
+                    dist[{nx, ny}] = dist[{x, y}];
+                    q.push_front({nx, ny});
                 }
-                else
+            }
+        }
+        for (int i = -2; i <= 2; i ++)
+        {
+            for (int j = -2; j <= 2; j ++)
+            {
+                int nx = x + i;
+                int ny = y + j;
+                if (nx >= 0 && nx < H && ny >= 0 && ny < W && grid[nx][ny] != '#')
                 {
-                    q.push_front(u);
+                    if (dist[{nx, ny}] > dist[{x, y}] + 1) 
+                    {
+                        dist[{nx, ny}] = dist[{x, y}] + 1;
+                        q.push_back({nx, ny});
+                    }
                 }
             }
         }
     }
 }
-vector<vector<pair<int,int>>> adjbf;
-vector<int> bellman_dist;
-// adjbf.assign(n + 1, {});
-// bellman_dist.assign(n + 1, LLONG_MAX);
-void bellmanFord(int n, int s)
-{
-    bellman_dist.assign(n + 1, LLONG_MAX);
-    bellman_dist[s] = 0;
-    for (int i = 1; i <= n - 1; i++)
-    {
-        for(int u = 1; u <= n; u++)
-        {
-            if (bellman_dist[u] == LLONG_MAX) continue;
-            for (auto [v, w] : adjbf[u])
-            {
-                if (bellman_dist[v] > bellman_dist[u] + w)
-                {
-                    bellman_dist[v] = bellman_dist[u] + w;
-                }
-            }
-        }
-    }
-}
-// for (int u = 1; u <= n; u++)
-// {
-//     if (bellman_dist[u] == LLONG_MAX) continue;
-//     for (auto [v, w] : adjbf[u])
-//     {
-//         if (bellman_dist[v] > bellman_dist[u] + w)
-//         {
-//             // Negative cycle detected.
-//             // Handle according to the problem.
-//         }
-//     }
-// }
-
 // --- DSU ---
 vector<int> parent;
 vector<int> sz; 
@@ -490,13 +480,37 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int H, W;
+    cin >> H >> W;
+    int Ch, Cw;
+    cin >> Ch >> Cw;
+    Ch--; Cw--;
+    int Dh, Dw;
+    cin >> Dh >> Dw;
+    Dh--; Dw--;
+    vector<vector<char>> grid(H, vector<char>(W, '.'));
+    for (int i = 0; i < H; i ++)
+    {
+        for (int j = 0; j < W; j ++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    for (int i = 0; i < H; i ++)
+    {
+        for (int j = 0; j < W; j ++)
+        {
+            dist[{i, j}] = LLONG_MAX;
+        }
+    }
+    bfs01({Ch, Cw}, H, W, grid);
+    cout << (dist[{Dh, Dw}] == LLONG_MAX ? -1 : dist[{Dh, Dw}]);
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
