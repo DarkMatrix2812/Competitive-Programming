@@ -565,16 +565,59 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+int cnt_twos(int i, int l, int r, vector<vector<int>> &blocks) 
+{
+    int twos = 0;
+    for (int j = l; j <= r; j ++) 
+    {
+        if (abs(blocks[i][j]) == 2) twos += 1;
+    }
+    return twos;
+};
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    vector<vector<char>> grid(4, vector<char>(4, ' '));
+    for (int i = 0; i < 4; i ++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    for (int i = 0; i < 3; i ++)
+    {
+        for (int j = 0; j < 3; j ++)
+        {
+            int cnt = 0;
+            if (grid[i][j] == '#') cnt += 1;
+            if (grid[i][j + 1] == '#') cnt += 1;
+            if (grid[i + 1][j + 1] == '#') cnt += 1;
+            if (grid[i + 1][j] == '#') cnt += 1;
+            if (cnt >= 3) 
+            {
+                cout << "YES" << endl;
+                return;
+            }
+            cnt = 0;
+            if (grid[i][j] == '.') cnt += 1;
+            if (grid[i][j + 1] == '.') cnt += 1;
+            if (grid[i + 1][j + 1] == '.') cnt += 1;
+            if (grid[i + 1][j] == '.') cnt += 1;
+            if (cnt >= 3) 
+            {
+                cout << "YES" << endl;
+                return;
+            }
+        }
+    }
+    cout << "NO" << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

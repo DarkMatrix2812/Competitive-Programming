@@ -568,13 +568,46 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> ans(n, 0);
+    // use stack?
+    unordered_map<int, int> pos;
+    pos[a[0]] = 1;
+    stack<int> st;
+    st.push(a[0]);
+    for (int i = 1; i < n; i ++)
+    {
+        pos[a[i]] = i + 1;
+        if (a[i] > st.top())
+        {
+            ans[i] = pos[st.top()];
+        }
+        else
+        {
+            while (!st.empty() && st.top() >= a[i])
+            {
+                st.pop();
+            }
+            if (!st.empty()) ans[i] = pos[st.top()];
+        }
+        st.push(a[i]);
+    }
+    for (int x : ans)
+    {
+        cout << x << " ";
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

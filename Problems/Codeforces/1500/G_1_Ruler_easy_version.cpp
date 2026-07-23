@@ -568,6 +568,33 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    // a <= b query
+    // if x > b: output = a * b
+    // if a < x < b: output = a * (b + 1)
+    // if x < a : output = (a + 1) * (b + 1)
+    int low = 2; int high = 999;
+    while (low < high)
+    {
+        int a = low + (high - low) / 3;
+        int b = low + 2 * (high - low) / 3;
+        cout << "? " << a << " " << b << endl;
+        int x;
+        cin >> x;
+        if (x == (a * b))
+        {
+            low = b + 1;
+        }   
+        else if (x == (a * (b + 1)))
+        {
+            low = a + 1;
+            high = b;
+        }
+        else
+        {
+            high = a;
+        }
+    }
+    cout << "! " << low + (high - low) / 3 << endl;
 }
 int32_t main() 
 {

@@ -568,13 +568,56 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, x;
+    cin >> n >> x;
+    vector<int> a(n);
+    unordered_map<int, vector<int>> pos;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        pos[a[i]].push_back(i + 1);
+    }
+    sort(a.begin(), a.end());
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = i; j < n; j ++)
+        {
+            int target = x - a[i] - a[j];
+            if (binary_search(a.begin(), a.end(), target)) 
+            {
+                int i1 = pos[a[i]][0];
+                int i2 = -1, i3 = -1;
+                for (int idx : pos[a[j]])
+                {
+                    if (idx != i1)
+                    {
+                        i2 = idx;
+                        break;
+                    }
+                }
+                for (int idx : pos[target])
+                {
+                    if (idx != i1 && idx != i2)
+                    {
+                        i3 = idx;
+                          break;
+                    }
+                }
+                if (i2 != -1 && i3 != -1)
+                {
+                    cout << i1 << " " << i2 << " " << i3 << endl;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "IMPOSSIBLE" << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -393,84 +393,6 @@ int fenwick_query(int i)
     return sum;
 }
 
-// --- SEGMENT TREE ---
-int seg_n;
-vector<int> t, lazy;
-// seg_n = n;
-// t.assign(seg_n + 1, 0);
-// lazy.assign(seg_n + 1, 0);
-void build(int v, int tl, int tr, const vector<int>& a) 
-{
-    if (tl == tr) 
-    {
-        t[v] = a[tl];
-    } 
-    else 
-    {
-        int tm = (tl + tr) / 2;
-        build(v * 2, tl, tm, a);
-        build(v * 2 + 1, tm + 1, tr, a);
-        t[v] = t[v * 2] + t[v * 2 + 1];
-    }
-}
-void push(int v, int tl, int tr) 
-{
-    if (lazy[v]) 
-    {
-        int tm = (tl + tr) / 2;
-        t[v * 2] += lazy[v] * (tm - tl + 1);
-        lazy[v * 2] += lazy[v];
-        t[v * 2 + 1] += lazy[v] * (tr - tm);
-        lazy[v * 2 + 1] += lazy[v];
-        lazy[v] = 0;
-    }
-}
-void update(int v, int tl, int tr, int l, int r, int addend) 
-{
-    if (l > r) 
-        return;
-    if (l == tl && r == tr) 
-    {
-        t[v] += addend * (tr - tl + 1);
-        lazy[v] += addend;
-    } 
-    else 
-    {
-        push(v, tl, tr);
-        int tm = (tl + tr) / 2;
-        update(v * 2, tl, tm, l, min(r, tm), addend);
-        update(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, addend);
-        t[v] = t[v * 2] + t[v * 2 + 1];
-    }
-}
-int seg_sum(int v, int tl, int tr, int l, int r) 
-{
-    if (l > r)  return 0;
-    if (l == tl && r == tr) 
-    {
-        return t[v];
-    }
-    push(v, tl, tr);
-    int tm = (tl + tr) / 2;
-    return seg_sum(v * 2, tl, tm, l, min(r, tm)) + seg_sum(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);
-}
-void buildSegTree(const vector<int>& a) 
-{
-    seg_n = a.size();
-    t.assign(4 * seg_n, 0);
-    lazy.assign(4 * seg_n, 0);
-    if (seg_n > 0) build(1, 0, seg_n - 1, a);
-}
-void seg_add(int l, int r, int val) 
-{
-    if (seg_n > 0) update(1, 0, seg_n - 1, l, r, val);
-}
-int query_sum(int l, int r) 
-{
-    if (seg_n == 0) return 0;
-    return seg_sum(1, 0, seg_n - 1, l, r);
-}
-
 // --- MATRIX OPERATIONS ---
 vector<vector<int>> identityMatrix(int n) 
 {
@@ -568,6 +490,20 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> h(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> h[i];
+    }
+    vector<int> adjacent;
+    for (int i = 0; i < n - 1; i ++)
+    {
+        if (h[i] == h[i + 1]) adjacent.push_back(h[i]);
+    }
+    if (adjacent.empty()) cout << 0 << endl;
+    else cout << *max_element(adjacent.begin(), adjacent.end()) << endl;
 }
 int32_t main() 
 {

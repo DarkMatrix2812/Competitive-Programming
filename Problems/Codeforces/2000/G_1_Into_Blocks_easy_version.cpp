@@ -395,22 +395,21 @@ int fenwick_query(int i)
 
 // --- SEGMENT TREE ---
 int seg_n;
-vector<int> t, lazy;
-// seg_n = n;
-// t.assign(seg_n + 1, 0);
-// lazy.assign(seg_n + 1, 0);
+vector<int> t_sum, t_max, lazy;
 void build(int v, int tl, int tr, const vector<int>& a) 
 {
     if (tl == tr) 
     {
-        t[v] = a[tl];
+        t_sum[v] = a[tl];
+        t_max[v] = a[tl];
     } 
     else 
     {
         int tm = (tl + tr) / 2;
         build(v * 2, tl, tm, a);
         build(v * 2 + 1, tm + 1, tr, a);
-        t[v] = t[v * 2] + t[v * 2 + 1];
+        t_sum[v] = t_sum[v * 2] + t_sum[v * 2 + 1];
+        t_max[v] = max(t_max[v * 2], t_max[v * 2 + 1]);
     }
 }
 void push(int v, int tl, int tr) 
@@ -418,20 +417,22 @@ void push(int v, int tl, int tr)
     if (lazy[v]) 
     {
         int tm = (tl + tr) / 2;
-        t[v * 2] += lazy[v] * (tm - tl + 1);
+        t_sum[v * 2] += lazy[v] * (tm - tl + 1);
+        t_max[v * 2] += lazy[v];
         lazy[v * 2] += lazy[v];
-        t[v * 2 + 1] += lazy[v] * (tr - tm);
+        t_sum[v * 2 + 1] += lazy[v] * (tr - tm);
+        t_max[v * 2 + 1] += lazy[v];
         lazy[v * 2 + 1] += lazy[v];
         lazy[v] = 0;
     }
 }
 void update(int v, int tl, int tr, int l, int r, int addend) 
 {
-    if (l > r) 
-        return;
+    if (l > r) return;
     if (l == tl && r == tr) 
     {
-        t[v] += addend * (tr - tl + 1);
+        t_sum[v] += addend * (tr - tl + 1);
+        t_max[v] += addend;
         lazy[v] += addend;
     } 
     else 
@@ -440,24 +441,37 @@ void update(int v, int tl, int tr, int l, int r, int addend)
         int tm = (tl + tr) / 2;
         update(v * 2, tl, tm, l, min(r, tm), addend);
         update(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, addend);
-        t[v] = t[v * 2] + t[v * 2 + 1];
+        t_sum[v] = t_sum[v * 2] + t_sum[v * 2 + 1];
+        t_max[v] = max(t_max[v * 2], t_max[v * 2 + 1]);
     }
 }
 int seg_sum(int v, int tl, int tr, int l, int r) 
 {
-    if (l > r)  return 0;
+    if (l > r) return 0;
     if (l == tl && r == tr) 
     {
-        return t[v];
+        return t_sum[v];
     }
     push(v, tl, tr);
     int tm = (tl + tr) / 2;
     return seg_sum(v * 2, tl, tm, l, min(r, tm)) + seg_sum(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);
 }
+int seg_max(int v, int tl, int tr, int l, int r) 
+{
+    if (l > r) return 0;
+    if (l == tl && r == tr) 
+    {
+        return t_max[v];
+    }
+    push(v, tl, tr);
+    int tm = (tl + tr) / 2;
+    return max(seg_max(v * 2, tl, tm, l, min(r, tm)), seg_max(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r));
+}
 void buildSegTree(const vector<int>& a) 
 {
     seg_n = a.size();
-    t.assign(4 * seg_n, 0);
+    t_sum.assign(4 * seg_n, 0);
+    t_max.assign(4 * seg_n, 0);
     lazy.assign(4 * seg_n, 0);
     if (seg_n > 0) build(1, 0, seg_n - 1, a);
 }
@@ -465,10 +479,15 @@ void seg_add(int l, int r, int val)
 {
     if (seg_n > 0) update(1, 0, seg_n - 1, l, r, val);
 }
-int query_sum(int l, int r) 
+int seg_query_sum(int l, int r) 
 {
     if (seg_n == 0) return 0;
     return seg_sum(1, 0, seg_n - 1, l, r);
+}
+int seg_query_max(int l, int r) 
+{
+    if (seg_n == 0) return -LLONG_MAX;
+    return seg_max(1, 0, seg_n - 1, l, r);
 }
 
 // --- MATRIX OPERATIONS ---
@@ -568,13 +587,76 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    // first and last occurrences
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
+    vector<int> f;
+    unordered_map<int, int> freq;
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+        freq[a[i]] += 1;
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        f.push_back(freq[a[i]]);
+    }
+    unordered_map<int, int> first, last;
+    unordered_set<int> seen;
+    for (int i = 0; i < n; i ++)
+    {
+        if (seen.count(a[i])) last[a[i]] = i;
+        else
+        {
+            first[a[i]] = i;
+            last[a[i]] = i;
+            seen.insert(a[i]);
+        } 
+    }
+    // for each interval, we need to add (length of interval - max(freq[element in interval]))
+    vector<pair<int, int>> intervals;
+    seen.clear();
+    for (int i = 0; i < n; i ++)
+    {
+        if (!seen.count(a[i])) 
+        {
+            intervals.push_back({first[a[i]], last[a[i]]});
+            seen.insert(a[i]);
+        }
+    }
+    sort(intervals.begin(), intervals.end());
+    int currl = intervals[0].first;
+    int currr = intervals[0].second;
+    vector<pair<int, int>> merged;
+    for (int i = 1; i < intervals.size(); i ++)
+    {
+        if (intervals[i].first <= currr)
+        {
+            currr = max(intervals[i].second, currr);
+        }
+        else
+        {
+            merged.push_back({currl, currr});
+            currl = intervals[i].first;
+            currr = intervals[i].second;
+        }
+    }
+    merged.push_back({currl, currr});
+    // find mode of [L, R] in O(1) or O(logn) it's gone
+    buildSegTree(f);
+    int ans = 0;
+    for (auto &p : merged)
+    {
+        ans += ((p.second - p.first + 1) - seg_query_max(p.first, p.second));
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

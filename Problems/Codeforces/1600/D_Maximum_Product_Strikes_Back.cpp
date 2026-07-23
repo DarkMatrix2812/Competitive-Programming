@@ -565,9 +565,104 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+int cnt_twos(int i, int l, int r, vector<vector<int>> &blocks) 
+{
+    int twos = 0;
+    for (int j = l; j <= r; j ++) 
+    {
+        if (abs(blocks[i][j]) == 2) twos += 1;
+    }
+    return twos;
+};
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<vector<int>> blocks;
+    vector<int> tmp;
+    vector<int> start(n + 1, -1), end(n + 1, -1);
+    int cnt = 0; // cnt-th block
+    for (int i = 0; i < n; i ++)
+    {
+        if (a[i] == 0)
+        {
+            if (!tmp.empty()) 
+            {
+                blocks.push_back(tmp);
+                cnt += 1;
+            }
+            tmp.clear();
+        }
+        else
+        {
+            end[cnt] = i;
+            if (start[cnt] == -1) start[cnt] = i;
+            tmp.push_back(a[i]);
+        }
+    }
+    if (!tmp.empty()) blocks.push_back(tmp);
+    int mx = 0; 
+    int l = 0, r = -1;
+    for (int i = 0; i < blocks.size(); i ++)
+    {
+        int neg = 0;
+        int first = -1;
+        int last = -1;
+        for (int j = 0; j < blocks[i].size(); j++)
+        {
+            if (blocks[i][j] < 0) 
+            {
+                neg += 1;
+                if (first == -1) first = j;
+                last = j;
+            }
+        }
+        
+        if (neg % 2 == 0)
+        {
+            int twos = cnt_twos(i, 0, blocks[i].size() - 1, blocks);
+            if (twos >= mx) 
+            {
+                mx = twos;
+                l = start[i];
+                r = end[i];
+            }
+        }
+        else
+        {
+            if (first + 1 < blocks[i].size()) 
+            {
+                int twos = cnt_twos(i, first + 1, blocks[i].size() - 1, blocks);
+                if (twos >= mx) 
+                {
+                    mx = twos;
+                    l = start[i] + first + 1;
+                    r = end[i];
+                }
+            }
+            if (last >= 1) 
+            {
+                int twos = cnt_twos(i, 0, last - 1, blocks);
+                if (twos >= mx) 
+                {
+                    mx = twos;
+                    l = start[i];
+                    r = start[i] + last - 1;
+                }
+            }
+        }
+    }
+    if (r == -1) cout << n << " " << 0 << endl;
+    else 
+    {
+        cout << l << " " << n - r - 1 << endl;
+    }
 }
 int32_t main() 
 {

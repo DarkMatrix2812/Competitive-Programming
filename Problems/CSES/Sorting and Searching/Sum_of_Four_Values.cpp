@@ -568,13 +568,39 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, x;
+    cin >> n >> x;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    // store sums of all pairs a + b
+    // now find c and d such that c + d = x - (a + b) ?
+    unordered_map<int, pair<int, int>> mp;
+    for (int i = 0; i < n; i ++)
+    {
+        for (int j = i + 1; j < n; j ++)
+        {
+            int target = x - a[i] - a[j];
+            if (mp.count(target))
+            {
+                cout << mp[target].first << " " << mp[target].second << " " << i + 1 << " " << j + 1;
+                return;
+            }
+        }
+        for (int k = 0; k < i; k ++)
+        {
+            mp[a[k] + a[i]] = {k + 1, i + 1};
+        }
+    }
+    cout << "IMPOSSIBLE" << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

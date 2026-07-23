@@ -565,9 +565,61 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
+bool check(int x, vector<vector<int>> &g, int k)
+{
+    bool ok = false;
+    for (int color = 1; color <= k; color ++)
+    {
+        int cnt = 0;
+        int G = 0;
+        for (int gap : g[color])
+        {
+            if (gap <= x) continue;
+            if (gap > x) 
+            {
+                G = gap;
+                cnt += 1;
+            }
+        }
+        if ((cnt == 1 && G / 2 <= x) || (cnt == 0)) ok = true;
+    }
+    if (ok) return true;
+    else return false;
+}
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, k;
+    cin >> n >> k;
+    vector<int> c(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> c[i];
+    }
+    vector<int> last(k + 1, -1);
+    vector<vector<int>> g(k + 1);
+    for (int i = 0; i < n; i ++)
+    {
+        g[c[i]].push_back(i - last[c[i]] - 1);
+        last[c[i]] = i;
+    }
+    for (int color = 1; color <= k; color ++)
+    {
+        g[color].push_back(n - last[color] - 1);
+    }
+    // binary search on answer
+    int low = 0; int high = 2e5; int ans = 0;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        if (check(mid, g, k))
+        {
+            high = mid - 1;
+            ans = mid;
+        }
+        else low = mid + 1;
+    }
+    cout << ans << endl;
 }
 int32_t main() 
 {

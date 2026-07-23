@@ -568,13 +568,43 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    int m;
+    cin >> m;
+    vector<int> x(m), y(m);
+    for (int i = 0; i < m; i ++)
+    {
+        cin >> x[i] >> y[i];
+    }
+    sort(a.begin(), a.end());
+    int total = accumulate(a.begin(), a.end(), 0LL);
+    for (int i = 0; i < m; i ++)
+    {
+        auto attacker = lower_bound(a.begin(), a.end(), x[i]);
+        int ans1 = LLONG_MAX; int ans2 = LLONG_MAX;
+        if (attacker != a.end())
+        {
+            ans1 = max(0LL, x[i] - *attacker) + max(0LL, y[i] - (total - *attacker));
+        }
+        if (attacker != a.begin())
+        {
+            attacker--;
+            ans2 = max(0LL, x[i] - *attacker) + max(0LL, y[i] - (total - *attacker));
+        }
+        cout << min(ans1, ans2) << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

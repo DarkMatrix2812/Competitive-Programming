@@ -568,13 +568,25 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    int limit = (int)log2(n) + 1;
+    int ans = 0;
+    for (int b = 0; b <= limit; b++)
+    {
+        int cycle = 1LL << (b + 1);
+        int half = 1LL << b;
+        int full = (n + 1) / cycle;
+        int rem = (n + 1) % cycle;
+        ans += full * half + max(0LL, rem - half);
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();
