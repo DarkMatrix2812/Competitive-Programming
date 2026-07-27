@@ -539,18 +539,34 @@ void solve()
     sort(marbles.begin(), marbles.end());
     int curr = 0;
     // check mismatch of positions
-    for (auto p : marbles)
+    for (int i = 0; i < marbles.size(); )
     {
-        while (curr < n && curr % 2 != p.second)
+        int j = i;
+        int c0 = 0, c1 = 0;
+        while (j < marbles.size() && marbles[j].first == marbles[i].first)
         {
-            curr += 1;
+            if (marbles[j].second == 0) c0++;
+            else c1++;
+            j ++;
         }
-        if (curr >= n)
+        while (c0 > 0 || c1 > 0)
         {
-            cout << "NO" << endl;
-            return;
+            if (curr >= n)
+            {
+                cout << "NO" << endl;
+                return;
+            }
+            if (curr % 2 == 0) 
+            {
+                if (c0 > 0) c0--; 
+            } 
+            else 
+            {
+                if (c1 > 0) c1--; 
+            }
+            curr++;
         }
-        curr += 1;
+        i = j;
     }
     cout << "YES" << endl;
 }

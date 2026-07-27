@@ -607,13 +607,17 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    string s;
+    cin >> s;
+    string sub;
+    cin >> sub;
+    cout << kmp(sub, s).size();
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

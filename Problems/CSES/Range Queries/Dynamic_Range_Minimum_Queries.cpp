@@ -410,7 +410,7 @@ void build(int v, int tl, int tr, const vector<int>& a)
         int tm = (tl + tr) / 2;
         build(v * 2, tl, tm, a);
         build(v * 2 + 1, tm + 1, tr, a);
-        t[v] = t[v * 2] + t[v * 2 + 1];
+        t[v] = min(t[v * 2], t[v * 2 + 1]);
     }
 }
 void push(int v, int tl, int tr) 
@@ -425,34 +425,24 @@ void push(int v, int tl, int tr)
         lazy[v] = 0;
     }
 }
-void update(int v, int tl, int tr, int l, int r, int addend) 
+void update(int v, int tl, int tr, int pos, int val) 
 {
-    if (l > r) 
+    if (tl == tr)
+    {
+        t[v] = val;
         return;
-    if (l == tl && r == tr) 
-    {
-        t[v] += addend * (tr - tl + 1);
-        lazy[v] += addend;
-    } 
-    else 
-    {
-        push(v, tl, tr);
-        int tm = (tl + tr) / 2;
-        update(v * 2, tl, tm, l, min(r, tm), addend);
-        update(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, addend);
-        t[v] = t[v * 2] + t[v * 2 + 1];
     }
-}
-int seg_sum(int v, int tl, int tr, int l, int r) 
-{
-    if (l > r)  return 0;
-    if (l == tl && r == tr) 
-    {
-        return t[v];
-    }
-    push(v, tl, tr);
     int tm = (tl + tr) / 2;
-    return seg_sum(v * 2, tl, tm, l, min(r, tm)) + seg_sum(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);
+    if (pos <= tm) update(v * 2, tl, tm, pos, val);
+    else update(v * 2 + 1, tm + 1, tr, pos, val);
+    t[v] = min(t[v * 2], t[v * 2 + 1]);
+}
+int seg_min(int v, int tl, int tr, int l, int r)
+{
+    if (l > r) return LLONG_MAX;
+    if (l == tl && r == tr) return t[v];
+    int tm = (tl + tr) / 2;
+    return min(seg_min(v * 2, tl, tm, l, min(r, tm)), seg_min(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r));
 }
 void buildSegTree(const vector<int>& a) 
 {
@@ -461,14 +451,14 @@ void buildSegTree(const vector<int>& a)
     lazy.assign(4 * seg_n, 0);
     if (seg_n > 0) build(1, 0, seg_n - 1, a);
 }
-void seg_add(int l, int r, int val) 
+void seg_update(int pos, int val) 
 {
-    if (seg_n > 0) update(1, 0, seg_n - 1, l, r, val);
+    if (seg_n > 0) update(1, 0, seg_n - 1, pos, val);
 }
-int query_sum(int l, int r) 
+int query(int l, int r) 
 {
     if (seg_n == 0) return 0;
-    return seg_sum(1, 0, seg_n - 1, l, r);
+    return seg_min(1, 0, seg_n - 1, l, r);
 }
 
 // --- MATRIX OPERATIONS ---
@@ -505,45 +495,6 @@ vector<vector<int>> matrixExp(vector<vector<int>> base, int exp)
         exp >>= 1;
     }
     return result;
-}
-
-// --- STRING OPERATIONS ---
-vector<int> prefix_function(string s) 
-{
-    int n = s.length();
-    vector<int> pi(n, 0); 
-    for (int i = 1; i < n; i++) 
-    {
-        int j = pi[i - 1];
-        while (j > 0 && s[i] != s[j])
-        {
-            j = pi[j - 1];
-        }
-        if (s[i] == s[j]) j++;
-        pi[i] = j;
-    }
-    return pi;
-}
-vector<int> kmp(string substr, string parent) 
-{
-    vector<int> matches;
-    if (substr.empty() || parent.empty() || substr.length() > parent.length()) return matches;
-    vector<int> pi = prefix_function(substr);
-    int j = 0;
-    for (int i = 0; i < parent.length(); i++) 
-    {
-        while (j > 0 && parent[i] != substr[j]) 
-        {
-            j = pi[j - 1];
-        }
-        if (parent[i] == substr[j]) j++;
-        if (j == substr.length()) 
-        {
-            matches.push_back(i - j + 1);
-            j = pi[j - 1]; 
-        }
-    }
-    return matches;
 }
 
 // --- SPARSE TABLE ---
@@ -607,13 +558,37 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    buildSegTree(a);
+    for (int i = 0; i < q; i ++)
+    {
+        int x;
+        cin >> x;
+        if (x == 1)
+        {
+            int k, u;
+            cin >> k >> u;
+            seg_update(k - 1, u);
+        }
+        else
+        {
+            int a, b;
+            cin >> a >> b;
+            cout << query(a - 1, b - 1) << endl;
+        }
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

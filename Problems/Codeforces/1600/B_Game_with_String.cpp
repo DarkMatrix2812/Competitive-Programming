@@ -507,45 +507,6 @@ vector<vector<int>> matrixExp(vector<vector<int>> base, int exp)
     return result;
 }
 
-// --- STRING OPERATIONS ---
-vector<int> prefix_function(string s) 
-{
-    int n = s.length();
-    vector<int> pi(n, 0); 
-    for (int i = 1; i < n; i++) 
-    {
-        int j = pi[i - 1];
-        while (j > 0 && s[i] != s[j])
-        {
-            j = pi[j - 1];
-        }
-        if (s[i] == s[j]) j++;
-        pi[i] = j;
-    }
-    return pi;
-}
-vector<int> kmp(string substr, string parent) 
-{
-    vector<int> matches;
-    if (substr.empty() || parent.empty() || substr.length() > parent.length()) return matches;
-    vector<int> pi = prefix_function(substr);
-    int j = 0;
-    for (int i = 0; i < parent.length(); i++) 
-    {
-        while (j > 0 && parent[i] != substr[j]) 
-        {
-            j = pi[j - 1];
-        }
-        if (parent[i] == substr[j]) j++;
-        if (j == substr.length()) 
-        {
-            matches.push_back(i - j + 1);
-            j = pi[j - 1]; 
-        }
-    }
-    return matches;
-}
-
 // --- SPARSE TABLE ---
 int st_n, max_log;
 vector<vector<int>> st_min, st_max;
@@ -607,13 +568,48 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    string s;
+    cin >> s;
+    // find all shifts and store by starting letter
+    // each column - the max count of elements which has freq = 1
+    int n = s.size();
+    vector<string> shifts;
+    for (int k = 0; k < n; k ++)
+    {
+        shifts.push_back(s.substr(k) + s.substr(0, k));
+    }
+    unordered_map<char, vector<string>> mp;
+    for (string &str : shifts)
+    {
+        mp[str[0]].push_back(str);
+    }
+    int ans = 0;
+    for (auto &p : mp)
+    {
+        int mx = 0;
+        for (int column = 1; column < n; column ++)
+        {
+            vector<int> freq(26, 0);
+            for (string &str : p.second)
+            {
+                freq[str[column] - 'a'] += 1;
+            }
+            int cnt = 0;
+            for (int x : freq) 
+            {
+                if (x == 1) cnt += 1;
+            }
+            mx = max(mx, cnt);
+        }
+        ans += mx;
+    }
+    cout << fixed << setprecision(6) << (double)ans / n << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

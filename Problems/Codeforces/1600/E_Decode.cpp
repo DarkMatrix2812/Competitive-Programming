@@ -507,45 +507,6 @@ vector<vector<int>> matrixExp(vector<vector<int>> base, int exp)
     return result;
 }
 
-// --- STRING OPERATIONS ---
-vector<int> prefix_function(string s) 
-{
-    int n = s.length();
-    vector<int> pi(n, 0); 
-    for (int i = 1; i < n; i++) 
-    {
-        int j = pi[i - 1];
-        while (j > 0 && s[i] != s[j])
-        {
-            j = pi[j - 1];
-        }
-        if (s[i] == s[j]) j++;
-        pi[i] = j;
-    }
-    return pi;
-}
-vector<int> kmp(string substr, string parent) 
-{
-    vector<int> matches;
-    if (substr.empty() || parent.empty() || substr.length() > parent.length()) return matches;
-    vector<int> pi = prefix_function(substr);
-    int j = 0;
-    for (int i = 0; i < parent.length(); i++) 
-    {
-        while (j > 0 && parent[i] != substr[j]) 
-        {
-            j = pi[j - 1];
-        }
-        if (parent[i] == substr[j]) j++;
-        if (j == substr.length()) 
-        {
-            matches.push_back(i - j + 1);
-            j = pi[j - 1]; 
-        }
-    }
-    return matches;
-}
-
 // --- SPARSE TABLE ---
 int st_n, max_log;
 vector<vector<int>> st_min, st_max;
@@ -607,6 +568,29 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    string s;
+    cin >> s;
+    int n = s.size();
+    vector<int> pref0(n + 1, 0), pref1(n + 1, 0);
+    vector<int> diff(n + 1, 0);
+    for (int i = 1; i <= n; i ++)
+    {
+        pref0[i] = pref0[i - 1] + (s[i - 1] == '0');
+        pref1[i] = pref1[i - 1] + (s[i - 1] == '1');
+        diff[i] = pref0[i] - pref1[i];
+    }
+    // diff[x - 1] = diff[y]
+    // flip the problem on its head: for each (x,y) how many (l,r) does it contribute to
+    // x * (n - y + 1) => pref(x) * (n - y + 1) for each y
+    int ans = 0;
+    map<int, int> pref;
+    pref[0] = 1;
+    for (int y = 1; y <= n; y ++)
+    {
+        ans = (ans + ((n - y + 1) * pref[diff[y]])) % MOD;
+        pref[diff[y]] = (pref[diff[y]] + (y + 1)) % MOD;
+    }
+    cout << ans % MOD << endl;
 }
 int32_t main() 
 {

@@ -607,13 +607,27 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int low = 0; int high = 1e9; int ans = 0;
+    while (low <= high)
+    {
+        int mid = low + (high - low) / 2;
+        cout << "? " << mid << endl;
+        string s;
+        cin >> s;
+        if (s == "YES") 
+        {
+            ans = mid;
+            low = mid + 1;
+        }
+        else high = mid - 1;
+    }
+    cout << "! " << ans + 1 << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

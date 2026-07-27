@@ -607,13 +607,50 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> ans(n + 1);
+    vector<int> idx(n);
+    for (int i = 0; i < n; i ++)
+    {
+        idx[i] = i + 1;
+    }
+    vector<vector<int>> memo(n + 1, vector<int>(n + 1, 0));
+    stable_sort(idx.begin(), idx.end(), [&](int i, int j)
+    {
+        if (memo[i][j] != 0) return memo[i][j] == 1;
+        cout << "? " << i << " " << j << endl;
+        string s;
+        cin >> s;
+        if (s == "YES") 
+        {
+            memo[i][j] = 1;
+            memo[j][i] = -1;
+            return true;
+        } 
+        else 
+        {
+            memo[i][j] = -1;
+            memo[j][i] = 1;
+            return false;
+        }
+    });
+    for (int i = 0; i < n; i ++)
+    {
+        ans[idx[i]] = i + 1;
+    }
+    cout << "! ";
+    for (int i = 1; i <= n; i ++)
+    {
+        cout << ans[i] << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

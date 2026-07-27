@@ -507,45 +507,6 @@ vector<vector<int>> matrixExp(vector<vector<int>> base, int exp)
     return result;
 }
 
-// --- STRING OPERATIONS ---
-vector<int> prefix_function(string s) 
-{
-    int n = s.length();
-    vector<int> pi(n, 0); 
-    for (int i = 1; i < n; i++) 
-    {
-        int j = pi[i - 1];
-        while (j > 0 && s[i] != s[j])
-        {
-            j = pi[j - 1];
-        }
-        if (s[i] == s[j]) j++;
-        pi[i] = j;
-    }
-    return pi;
-}
-vector<int> kmp(string substr, string parent) 
-{
-    vector<int> matches;
-    if (substr.empty() || parent.empty() || substr.length() > parent.length()) return matches;
-    vector<int> pi = prefix_function(substr);
-    int j = 0;
-    for (int i = 0; i < parent.length(); i++) 
-    {
-        while (j > 0 && parent[i] != substr[j]) 
-        {
-            j = pi[j - 1];
-        }
-        if (parent[i] == substr[j]) j++;
-        if (j == substr.length()) 
-        {
-            matches.push_back(i - j + 1);
-            j = pi[j - 1]; 
-        }
-    }
-    return matches;
-}
-
 // --- SPARSE TABLE ---
 int st_n, max_log;
 vector<vector<int>> st_min, st_max;
@@ -607,6 +568,46 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<pair<pair<int, int>, int>> intervals;
+    vector<int> l(n), r(n);
+    vector<int> ans(n, 0);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> l[i] >> r[i];
+        intervals.push_back({{l[i], r[i]}, i});
+    }
+    sort(intervals.begin(), intervals.end());
+    int mx = (intervals[0].first).second;
+    ans[intervals[0].second] = 1;
+    bool ok = false;
+    for (int i = 1; i < n; i ++)
+    {
+        if ((intervals[i].first).first <= mx)
+        {
+            ans[intervals[i].second] = 1;
+            mx = max(mx, (intervals[i].first).second);
+        }
+        else 
+        {
+            ok = true;
+            break;
+        }
+    }
+    if (ok)
+    {
+        for (int i = 0; i < n; i ++)
+        {
+            if (ans[i] == 0) ans[i] = 2;
+        }
+        for (int x : ans)
+        {
+            cout << x << " ";
+        }
+        cout << endl;
+    }
+    else cout << -1 << endl;
 }
 int32_t main() 
 {
