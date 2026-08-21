@@ -66,41 +66,6 @@ int modinv(int a, int M)
     if (u < 0) u += M;
     return u;
 }
-int getPhi(int n) 
-{
-    int result = n;
-    for (int i = 2; i * i <= n; i++) 
-    {
-        if (n % i == 0) 
-        {
-            while (n % i == 0)
-                n /= i;
-            result -= result / i;
-        }
-    }
-    if (n > 1) result -= result / n;
-    return result;
-}
-vector<int> phi_arr;
-void buildPhi(int N) 
-{
-    phi_arr.resize(N + 1);
-    for (int i = 0; i <= N; i++) 
-    {
-        phi_arr[i] = i;
-    }
-    for (int i = 2; i <= N; i++) 
-    {
-        if (phi_arr[i] == i) 
-        {
-            // i is a prime number
-            for (int j = i; j <= N; j += i)
-            {
-                phi_arr[j] -= phi_arr[j] / i;
-            }
-        }
-    }
-}
 vector<bool> sieve(int n) 
 {
     vector<bool> prime(n + 1, true);
@@ -642,13 +607,34 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n + 1);
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> a[i];
+    }
+    int ans = 0;
+    map<pair<int, int>, int> cnt;
+    for (int k = 3; k <= n - 1; k ++)
+    {
+        int j = k - 1;
+        for (int i = 1; i < j; i ++)
+        {
+            cnt[{a[i] / gcd(a[i], a[j]), a[j] / gcd(a[i], a[j])}] += 1;
+        }
+        for (int l = k + 1; l <= n; l ++)
+        {
+            ans += cnt[{a[l] / gcd(a[l], a[k]), a[k] / gcd(a[k], a[l])}];
+        }
+    }
+    cout << ans;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

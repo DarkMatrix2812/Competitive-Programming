@@ -13,6 +13,7 @@
 using namespace std;
 #define MOD 1000000007
 #define MOD2 998244353
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 // --- MATH ---
 vector<int> fact, invfact;
@@ -65,41 +66,6 @@ int modinv(int a, int M)
     u %= M;
     if (u < 0) u += M;
     return u;
-}
-int getPhi(int n) 
-{
-    int result = n;
-    for (int i = 2; i * i <= n; i++) 
-    {
-        if (n % i == 0) 
-        {
-            while (n % i == 0)
-                n /= i;
-            result -= result / i;
-        }
-    }
-    if (n > 1) result -= result / n;
-    return result;
-}
-vector<int> phi_arr;
-void buildPhi(int N) 
-{
-    phi_arr.resize(N + 1);
-    for (int i = 0; i <= N; i++) 
-    {
-        phi_arr[i] = i;
-    }
-    for (int i = 2; i <= N; i++) 
-    {
-        if (phi_arr[i] == i) 
-        {
-            // i is a prime number
-            for (int j = i; j <= N; j += i)
-            {
-                phi_arr[j] -= phi_arr[j] / i;
-            }
-        }
-    }
 }
 vector<bool> sieve(int n) 
 {
@@ -642,13 +608,49 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n, q;
+    cin >> n >> q;
+    vector<string> A, B;
+    set<string> all;
+    for (int i = 0; i < n; i ++)
+    {
+        string s;
+        cin >> s;
+        A.push_back(s);
+        all.insert(s);
+    }
+    for (int i = 0; i < n; i ++)
+    {
+        string s;
+        cin >> s;
+        B.push_back(s);
+        all.insert(s);
+    }
+    map<string, uint64_t> mp;
+    for (string str : all)
+    {
+        mp[str] = rng();
+    }
+    vector<int> prefa(n + 1, 0);
+    vector<int> prefb(n + 1, 0);
+    for (int i = 1; i <= n; i ++)
+    {
+        prefa[i] = prefa[i - 1] + (mp[A[i - 1]]);
+        prefb[i] = prefb[i - 1] + (mp[B[i - 1]]);
+    }
+    for (int i = 0; i < q; i ++)
+    {
+        int l, r, L, R;
+        cin >> l >> r >> L >> R;
+        if (prefa[r] - prefa[l - 1] != prefb[R] - prefb[L - 1]) cout << "NO" << endl;
+        else cout << "YES" << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

@@ -66,41 +66,6 @@ int modinv(int a, int M)
     if (u < 0) u += M;
     return u;
 }
-int getPhi(int n) 
-{
-    int result = n;
-    for (int i = 2; i * i <= n; i++) 
-    {
-        if (n % i == 0) 
-        {
-            while (n % i == 0)
-                n /= i;
-            result -= result / i;
-        }
-    }
-    if (n > 1) result -= result / n;
-    return result;
-}
-vector<int> phi_arr;
-void buildPhi(int N) 
-{
-    phi_arr.resize(N + 1);
-    for (int i = 0; i <= N; i++) 
-    {
-        phi_arr[i] = i;
-    }
-    for (int i = 2; i <= N; i++) 
-    {
-        if (phi_arr[i] == i) 
-        {
-            // i is a prime number
-            for (int j = i; j <= N; j += i)
-            {
-                phi_arr[j] -= phi_arr[j] / i;
-            }
-        }
-    }
-}
 vector<bool> sieve(int n) 
 {
     vector<bool> prime(n + 1, true);
@@ -642,6 +607,67 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i];
+    }
+    vector<int> colora(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> colora[i];
+    }
+    vector<int> b(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> b[i];
+    }
+    vector<int> colorb(n);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> colorb[i];
+    }
+    // store colors
+    map<int, multiset<int>> color;
+    map<int, bool> seen;
+    for (int i = 0; i < n; i ++)
+    {
+        color[colora[i]].insert(a[i]);
+        color[colorb[i]].insert(b[i]);
+        seen[colorb[i]] = true;
+    } 
+    int prev = INT_MIN;
+    bool ok = true;
+    for (int i = 0; i < n; i ++)
+    {
+        if (!seen.count(colora[i]))
+        {
+            if (a[i] < prev)
+            {
+                ok = false;
+                break;
+            }
+            else prev = a[i]; 
+        }
+        else
+        {
+            auto it = color[colora[i]].lower_bound(prev);
+            if (it == color[colora[i]].end())
+            {
+                ok = false;
+                break;
+            }
+            else
+            {
+                prev = *it;
+                color[colora[i]].erase(it);
+            }
+        }
+    }
+    if (ok) cout << "Yes" << endl;
+    else cout << "No" << endl;
 }
 int32_t main() 
 {

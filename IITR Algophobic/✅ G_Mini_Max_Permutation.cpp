@@ -66,41 +66,6 @@ int modinv(int a, int M)
     if (u < 0) u += M;
     return u;
 }
-int getPhi(int n) 
-{
-    int result = n;
-    for (int i = 2; i * i <= n; i++) 
-    {
-        if (n % i == 0) 
-        {
-            while (n % i == 0)
-                n /= i;
-            result -= result / i;
-        }
-    }
-    if (n > 1) result -= result / n;
-    return result;
-}
-vector<int> phi_arr;
-void buildPhi(int N) 
-{
-    phi_arr.resize(N + 1);
-    for (int i = 0; i <= N; i++) 
-    {
-        phi_arr[i] = i;
-    }
-    for (int i = 2; i <= N; i++) 
-    {
-        if (phi_arr[i] == i) 
-        {
-            // i is a prime number
-            for (int j = i; j <= N; j += i)
-            {
-                phi_arr[j] -= phi_arr[j] / i;
-            }
-        }
-    }
-}
 vector<bool> sieve(int n) 
 {
     vector<bool> prime(n + 1, true);
@@ -642,13 +607,19 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    for (int i = n; i >= 1; i --)
+    {
+        cout << i << " ";
+    }
+    cout << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int t = 1;
-    cin >> t;
     while (t--)
     {
         solve();

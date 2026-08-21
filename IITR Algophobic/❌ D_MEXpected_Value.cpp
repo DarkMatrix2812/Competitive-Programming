@@ -66,41 +66,6 @@ int modinv(int a, int M)
     if (u < 0) u += M;
     return u;
 }
-int getPhi(int n) 
-{
-    int result = n;
-    for (int i = 2; i * i <= n; i++) 
-    {
-        if (n % i == 0) 
-        {
-            while (n % i == 0)
-                n /= i;
-            result -= result / i;
-        }
-    }
-    if (n > 1) result -= result / n;
-    return result;
-}
-vector<int> phi_arr;
-void buildPhi(int N) 
-{
-    phi_arr.resize(N + 1);
-    for (int i = 0; i <= N; i++) 
-    {
-        phi_arr[i] = i;
-    }
-    for (int i = 2; i <= N; i++) 
-    {
-        if (phi_arr[i] == i) 
-        {
-            // i is a prime number
-            for (int j = i; j <= N; j += i)
-            {
-                phi_arr[j] -= phi_arr[j] / i;
-            }
-        }
-    }
-}
 vector<bool> sieve(int n) 
 {
     vector<bool> prime(n + 1, true);
@@ -642,6 +607,26 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    vector<int> a(n), p(n), q(n);
+    vector<int> missing(n + 2, 1);
+    for (int i = 0; i < n; i ++)
+    {
+        cin >> a[i] >> p[i] >> q[i];
+        missing[a[i]] = ((missing[a[i]] * ((q[i] - p[i] + MOD) % MOD)) % MOD * modinv(q[i], MOD)) % MOD;
+    }
+    int ans = 0;
+    vector<int> prefix(n + 2, 1);
+    for (int i = 1; i <= n + 1; i ++)
+    {
+        prefix[i] = (prefix[i - 1] * (1 - missing[i - 1] + MOD) % MOD) % MOD;
+    }
+    for (int mex = 1; mex <= n + 1; mex ++)
+    {
+        ans = (ans + prefix[mex]) % MOD;
+    }
+    cout << ans % MOD << endl;
 }
 int32_t main() 
 {
