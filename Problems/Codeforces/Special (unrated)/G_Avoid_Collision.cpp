@@ -580,38 +580,6 @@ vector<int> kmp(string substr, string parent)
     }
     return matches;
 }
-vector<int> manacher(string s) 
-{
-    if (s.empty()) return {};    
-    string t = "^";
-    for (char c : s) 
-    {
-        t += "#";
-        t += c;
-    }
-    t += "#$";
-    int n = t.length();
-    vector<int> p(n, 0); 
-    int C = 0, R = 0;
-    for (int i = 1; i < n - 1; i++) 
-    {
-        int i_mirror = 2 * C - i;
-        if (R > i) 
-        {
-            p[i] = min(R - i, p[i_mirror]);
-        }        
-        while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) 
-        {
-            p[i]++;
-        }        
-        if (i + p[i] > R) 
-        {
-            C = i;
-            R = i + p[i];
-        }
-    }
-    return p;
-}
 
 // --- SPARSE TABLE ---
 int st_n, max_log;
@@ -671,18 +639,99 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
-void solve()
+void solve(int n, int m)
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    vector<vector<char>> grid(n + 1, vector<char>(m + 1, '.'));
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+    vector<vector<int>> dpwf(n + 2, vector<int>(m + 2, 0)), dpwb(n + 2, vector<int>(m + 2, 0)), dpbf(n + 2, vector<int>(m + 2, 0)), dpbb(n + 2, vector<int>(m + 2, 0));
+    dpwf[1][1] = 1; dpwb[n][m] = 1; dpbf[n][1] = 1; dpbb[1][m] = 1;
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (i == 1 && j == 1) continue;
+            if (grid[i][j] == '#') dpwf[i][j] = 0;
+            else
+            {
+                dpwf[i][j] = (dpwf[i - 1][j] + dpwf[i][j - 1]) % MOD2;
+            }
+        }
+    }
+    for (int i = n; i >= 1; i --)
+    {
+        for (int j = m; j >= 1; j --)
+        {
+            if (i == n && j == m) continue;
+            if (grid[i][j] == '#') dpwb[i][j] = 0;
+            else
+            {
+                dpwb[i][j] = (dpwb[i + 1][j] + dpwb[i][j + 1]) % MOD2;
+            }
+        }
+    }
+    for (int i = n; i >= 1; i --)
+    {
+        for (int j = 1; j <= m; j ++)
+        {
+            if (i == n && j == 1) continue;
+            if (grid[i][j] == '#') dpbf[i][j] = 0;
+            else 
+            {
+                dpbf[i][j] = (dpbf[i + 1][j] + dpbf[i][j - 1]) % MOD2; 
+            }
+        }
+    }
+    for (int i = 1; i <= n; i ++)
+    {
+        for (int j = m; j >= 1; j --)
+        {
+            if (i == 1 && j == m) continue;
+            if (grid[i][j] == '#') dpbb[i][j] = 0;
+            else 
+            {
+                dpbb[i][j] = (dpbb[i - 1][j] + dpbb[i][j + 1]) % MOD2; 
+            }
+        }
+    }
+    int total = (dpwf[n][m] * dpbf[1][m]) % MOD2;
+    int pw = 1;
+    int pb = 1;
+    for (int j = 1; j <= 1; j ++)
+    {
+        pw *= ((dpwf[n / 2 + 1][j] * dpwb[n / 2 + 1][j])) % MOD2;
+        pb *= ((dpbf[n / 2 + 1][j] * dpbb[n / 2 + 1][j])) % MOD2;
+    }
+    total -= ((pw * pb) % MOD2);
+    total = (total + MOD2) % MOD2;
+    int remove = 0;
+    int a = 0; int b = 0; int c = 0; int d = 0; int e = 0; int f = 0;
+    for (int j = 2; j <= m; j ++)
+    {
+        a = dpwf[n / 2 + 1][j];
+        b = dpwb[n / 2 + 1][j];
+        c = dpbf[n / 2 + 1][j];
+        d = dpbb[n / 2 + 1][j];
+        e = dpwf[n / 2 + 1][j - 1];
+        f = dpbf[n / 2 + 1][j - 1];
+        remove = (remove + (((((a * b) % MOD2 * c) % MOD2 * d) % MOD2 - (((b * d) % MOD2 * e) % MOD2 * f) % MOD2) + MOD2)) % MOD2;
+    }
+    total -= remove;
+    cout << (total + MOD2) % MOD2 << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    int tt = 1;
-    cin >> tt;
-    while (tt--)
+    int n, m;
+    while (cin >> n >> m && (n != 0 || m != 0))
     {
-        solve();
+        solve(n, m);
     }
 }

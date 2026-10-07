@@ -580,38 +580,6 @@ vector<int> kmp(string substr, string parent)
     }
     return matches;
 }
-vector<int> manacher(string s) 
-{
-    if (s.empty()) return {};    
-    string t = "^";
-    for (char c : s) 
-    {
-        t += "#";
-        t += c;
-    }
-    t += "#$";
-    int n = t.length();
-    vector<int> p(n, 0); 
-    int C = 0, R = 0;
-    for (int i = 1; i < n - 1; i++) 
-    {
-        int i_mirror = 2 * C - i;
-        if (R > i) 
-        {
-            p[i] = min(R - i, p[i_mirror]);
-        }        
-        while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) 
-        {
-            p[i]++;
-        }        
-        if (i + p[i] > R) 
-        {
-            C = i;
-            R = i + p[i];
-        }
-    }
-    return p;
-}
 
 // --- SPARSE TABLE ---
 int st_n, max_log;
@@ -671,18 +639,72 @@ int query_max(int L, int R)
 // x ^ (1LL << k);
 // // clear k-th bit
 // x & ~(1LL << k);
-void solve()
+void solve(int n)
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    vector<int> a(n + 1), b(n + 1);
+    int cnt = 0;
+    vector<pair<int, int>> v;
+    vector<pair<int, int>> x;
+    vector<pair<int, int>> all;
+    int total = 0;
+    for (int i = 1; i <= n; i ++)
+    {
+        cin >> a[i] >> b[i];
+        if (b[i] == 0)
+        {
+            x.push_back({a[i], b[i]});
+        }
+        else
+        {
+            v.push_back({a[i], b[i]});
+        }
+        total += b[i];
+    }
+    sort(v.begin(), v.end());
+    if (v.empty())
+    {
+        int ans = 0;
+        for (int i = 1; i <= n; i ++)
+        {
+            ans += a[i];
+        }
+        cout << ans << endl;
+        return;
+    }
+    int ans = 0;
+    ans += v[0].first;
+    if (total >= n - 1)
+    {
+        cout << ans << endl;
+    }
+    else
+    {
+        int rem = n - 1 - total;
+        vector<pair<int, int>> left;
+        for (int i = 0; i < x.size(); i ++)
+        {
+            left.push_back({x[i]. first, x[i].second});
+        }
+        for (int i = 1; i < v.size(); i ++)
+        {
+            left.push_back({v[i]. first, v[i].second});
+        }
+        sort(left.begin(), left.end());
+        for (int i = 0; i < rem; i ++)
+        {
+            ans += left[i].first;
+        }
+        cout << ans << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    int tt = 1;
-    cin >> tt;
-    while (tt--)
+    int n;
+    while (cin >> n && n != 0)
     {
-        solve();
+        solve(n);
     }
 }

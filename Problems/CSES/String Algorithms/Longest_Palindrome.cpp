@@ -674,13 +674,25 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    string s;
+    cin >> s;
+    vector<int> v = manacher(s);
+    int idx = -1; int mx = 0;
+    for (int i = 0; i < v.size(); i ++)
+    {
+        if (v[i] >= mx)
+        {
+            mx = v[i];
+            idx = i;
+        }
+    }
+    cout << s.substr((idx - 1 - mx) / 2, mx) << endl;
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int tt = 1;
-    cin >> tt;
     while (tt--)
     {
         solve();

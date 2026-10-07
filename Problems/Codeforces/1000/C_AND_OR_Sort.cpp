@@ -580,38 +580,6 @@ vector<int> kmp(string substr, string parent)
     }
     return matches;
 }
-vector<int> manacher(string s) 
-{
-    if (s.empty()) return {};    
-    string t = "^";
-    for (char c : s) 
-    {
-        t += "#";
-        t += c;
-    }
-    t += "#$";
-    int n = t.length();
-    vector<int> p(n, 0); 
-    int C = 0, R = 0;
-    for (int i = 1; i < n - 1; i++) 
-    {
-        int i_mirror = 2 * C - i;
-        if (R > i) 
-        {
-            p[i] = min(R - i, p[i_mirror]);
-        }        
-        while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) 
-        {
-            p[i]++;
-        }        
-        if (i + p[i] > R) 
-        {
-            C = i;
-            R = i + p[i];
-        }
-    }
-    return p;
-}
 
 // --- SPARSE TABLE ---
 int st_n, max_log;
@@ -674,14 +642,34 @@ int query_max(int L, int R)
 void solve()
 {
     // REMEMBER TO ASSIGN IF NEEDED!!!!!!
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    vector<int> pref(n);
+    pref[0] = (s[0] == '1');
+    for (int i = 1; i < n; i ++)
+    {
+        pref[i] = pref[i - 1] + (s[i] == '1');
+    }
+    if (s[0] == '1') cout << count(s.begin(), s.end(), '0') << endl;
+    else
+    {
+        int ans = count(s.begin(), s.end(), '1');
+        for (int i = 1; i < n; i ++)
+        {
+            if (s[i] == '1') ans = min(ans, pref[i - 1] + n - i - 1 - pref.back() + pref[i]);
+        }
+        cout << ans << endl;
+    }
 }
 int32_t main() 
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    int tt = 1;
-    cin >> tt;
-    while (tt--)
+    int t = 1;
+    cin >> t;
+    while (t--)
     {
         solve();
     }
