@@ -50,7 +50,4 @@ int main()
     while (t--) {
         solve();
     }
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-    cerr << "Time: " << duration.count() << "ms" << endl;
 }

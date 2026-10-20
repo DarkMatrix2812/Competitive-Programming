@@ -299,6 +299,42 @@ void recursive_dfs(int v)
         recursive_dfs(u);
     }
 }
+vector<int> in_deg;
+vector<int> topo;
+// in_deg.assign(n + 1, 0);
+void topological_sort(int n) 
+{
+    for (int u = 1; u <= n; u++) 
+    {
+        for (int v : adj[u]) 
+        {
+            in_deg[v]++;
+        }
+    }
+    queue<int> q; // Swap to priority_queue<int, vector<int>, greater<int>> for lexicographically smallest order
+    for (int i = 1; i <= n; i++) 
+    {
+        if (in_deg[i] == 0) 
+        {
+            q.push(i);
+        }
+    }
+    while (!q.empty()) 
+    {
+        int u = q.front();
+        q.pop();
+        topo.push_back(u);
+        for (int v : adj[u]) 
+        {
+            in_deg[v]--;
+            if (in_deg[v] == 0) 
+            {
+                q.push(v);
+            }
+        }
+    }
+    // if (topo.size() < n) to check if topo sort is even possible (can also be used for cycle detection)
+}
 vector<vector<pair<int,int>>> adjd;
 vector<int> dist;
 // dist.assign(n + 1, LLONG_MAX);
@@ -386,6 +422,39 @@ void bellmanFord(int n, int s)
 //         }
 //     }
 // }
+vector<int> side;
+//side.assign(n + 1, -1);
+bool bipartite(int n)
+{
+    bool is_bipartite = true;
+    queue<int> q;
+    for (int st = 1; st <= n; ++st)
+    {
+        if (side[st] == -1) 
+        {
+            q.push(st);
+            side[st] = 0;
+            while (!q.empty()) 
+            {
+                int v = q.front();
+                q.pop();
+                for (int u : adj[v]) 
+                {
+                    if (side[u] == -1) 
+                    {
+                        side[u] = side[v] ^ 1;
+                        q.push(u);
+                    } 
+                    else 
+                    {
+                        is_bipartite &= side[u] != side[v];
+                    }
+                }
+            }
+        }
+    }
+    return is_bipartite;
+}
 
 // --- DSU ---
 vector<int> parent;
