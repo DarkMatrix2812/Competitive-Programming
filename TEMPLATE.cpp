@@ -345,15 +345,15 @@ void dijkstra(int s)
     pq.push({0, s});
     while(!pq.empty())
     {
-        auto [d, v] = pq.top();
+        auto [d, u] = pq.top();
         pq.pop();
-        if(d != dist[v]) continue;
-        for(auto [u, w] : adjd[v])
+        if(d != dist[u]) continue;
+        for(auto [v, w] : adjd[u])
         {
-            if(dist[u] > d + w)
+            if(dist[v] > d + w)
             {
-                dist[u] = d + w;
-                pq.push({dist[u], u});
+                dist[v] = d + w;
+                pq.push({dist[v], v});
             }
         }
     }
@@ -454,6 +454,63 @@ bool bipartite(int n)
         }
     }
     return is_bipartite;
+}
+vector<int> scc_stk;  
+vector<int> scc_root;
+vector<int> scc_in; 
+vector<int> scc_low; 
+vector<vector<int>> scc_comps;
+vector<vector<int>> scc_adj;  
+int scc_timer;
+// scc_root.assign(n + 1, -1);
+// scc_in.assign(n + 1, -1);
+// scc_low.assign(n + 1, -1);
+void scc_dfs(int u)
+{
+    scc_low[u] = scc_in[u] = scc_timer++;
+    scc_stk.push_back(u);
+    for (int v : adj[u])
+    {
+        if (scc_in[v] == -1) // tree edge
+        {
+            scc_dfs(v);
+            scc_low[u] = min(scc_low[u], scc_low[v]);
+        }
+        else if (scc_root[v] == -1) // back/cross/forward edge to an unclaimed vertex
+        {
+            scc_low[u] = min(scc_low[u], scc_in[v]);
+        }
+    }
+    if (scc_low[u] == scc_in[u]) // u is a root
+    {
+        scc_comps.push_back({u});
+        while (true)
+        {
+            int v = scc_stk.back();
+            scc_stk.pop_back();
+            scc_root[v] = u;
+            if (v == u) break;
+            scc_comps.back().push_back(v);
+        }
+    }
+}
+void tarjan(int n)
+{
+    scc_stk.clear();
+    scc_comps.clear();
+    scc_timer = 0;
+    for (int u = 1; u <= n; u ++)
+    {
+        if (scc_in[u] == -1) scc_dfs(u);
+    }
+    scc_adj.assign(n + 1, {});
+    for (int u = 1; u <= n; u ++)
+    {
+        for (int v : adj[u])
+        {
+            if (scc_root[u] != scc_root[v]) scc_adj[scc_root[u]].push_back(scc_root[v]);
+        }
+    }
 }
 
 // --- DSU ---
