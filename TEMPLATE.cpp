@@ -465,6 +465,7 @@ int scc_timer;
 // scc_root.assign(n + 1, -1);
 // scc_in.assign(n + 1, -1);
 // scc_low.assign(n + 1, -1);
+// scc_adj.assign(n + 1, {});
 void scc_dfs(int u)
 {
     scc_low[u] = scc_in[u] = scc_timer++;
@@ -503,7 +504,6 @@ void tarjan(int n)
     {
         if (scc_in[u] == -1) scc_dfs(u);
     }
-    scc_adj.assign(n + 1, {});
     for (int u = 1; u <= n; u ++)
     {
         for (int v : adj[u])
